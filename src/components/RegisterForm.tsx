@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { LogIn, ArrowRight } from 'lucide-react';
+import SplineBackground from './SplineBackground';
 
 export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () => void }) {
   const [formData, setFormData] = useState({
@@ -44,7 +45,7 @@ export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () 
         const errorData = await response.json();
         throw new Error(errorData.message || 'Erreur lors de l\'inscription');
       }
- 
+
       const data = await response.json();
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
@@ -58,29 +59,31 @@ export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () 
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-slate-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
+      <SplineBackground url="https://prod.spline.design/P9M2dlKhXebtaaFH/scene.splinecode" />
+      {/* la taille du formulaire doit etre egale a la hauteur du navigateur */}
+      <div className="absolute rounded-2xl shadow-xl w-full max-w-md p-8 bg-white blur-backdrop-filter backdrop-blur-md bg-opacity-60 max-h-screen overflow-y-auto">
         <div className="flex items-center justify-center mb-8">
           <div className="bg-blue-600 p-3 rounded-xl">
             <LogIn className="w-8 h-8 text-white" />
           </div>
         </div>
 
-        <h1 className="text-3xl font-bold text-center mb-2 text-gray-800">
+        <h1 className="text-3xl font-bold text-center mb-2">
           Créer un compte
         </h1>
-        <p className="text-center text-gray-600 mb-8">
+        <p className="text-center mb-8">
           Inscrivez-vous pour accéder au portail RH
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
+            <div className="bg-red-50 text-red-800 p-3 rounded-lg text-sm">
               {error}
             </div>
           )}
 
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="name" className="block text-sm font-medium mb-2">
               Nom complet
             </label>
             <input
@@ -96,7 +99,7 @@ export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () 
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="email" className="block text-sm font-medium  mb-2">
               Email
             </label>
             <input
@@ -112,7 +115,7 @@ export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () 
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="password" className="block text-sm font-medium  mb-2">
               Mot de passe
             </label>
             <input
@@ -128,7 +131,7 @@ export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () 
           </div>
 
           <div>
-            <label htmlFor="password_confirmation" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="password_confirmation" className="block text-sm font-medium  mb-2">
               Confirmer le mot de passe
             </label>
             <input
@@ -144,7 +147,7 @@ export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () 
           </div>
 
           <div>
-            <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="role" className="block text-sm font-medium mb-2">
               Rôle
             </label>
             <select
@@ -170,11 +173,11 @@ export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () 
         </form>
 
         <div className="mt-6 pt-6 border-t border-gray-200">
-          <p className="text-center text-sm text-gray-600">
+          <p className="text-center text-sm ">
             Vous avez déjà un compte?{' '}
             <button
               onClick={onSwitchToLogin}
-              className="text-blue-600 font-medium hover:text-blue-700 transition"
+              className="text-white bg-blue-600  rounded-lg font-medium hover:bg-white hover:text-blue-600 h-8 w-56 transition"
             >
               Se connecter
             </button>
@@ -182,11 +185,11 @@ export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () 
         </div>
         <br />
         <button
-              onClick={() => window.location.href = '/'}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-white hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center space-x-2"
-            >
-              Retour à l'accueil
-          </button>
+          onClick={() => window.location.href = '/'}
+          className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-white hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center space-x-2"
+        >
+          Retour à l'accueil
+        </button>
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 
+
 interface LandingPageProps {
   onNavigate: (view: 'login' | 'register') => void;
 }
@@ -21,7 +22,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
   const features = [
     {
       icon: Users,
-      title: 'Annuaire des employés',
+      title: 'Annuaire des employés', 
       description: 'Gérez facilement tous les profils et informations de vos employés',
     },
     {
@@ -62,16 +63,16 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
 
   return (
   <>
-    <div className="min-h-screen bg-white">
+    <div className=" min-h-screen bg-white">
       {/* Navigation Header */}
-      <nav className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-40">
+      <nav className=" fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
               <div className="bg-blue-600 p-2 rounded-lg">
                 <Users className="w-6 h-6 text-white" />
               </div>
-              <span className="text-xl font-bold text-gray-900">Portail RH</span>
+              <span className="text-xl font-bold text-gray-900">Portail GRH</span>
             </div>
             <div className="flex items-center space-x-4">
               <button
@@ -93,8 +94,10 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 via-white to-slate-50">
+        
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            
             <div>
               <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                 Système complet de gestion RH
@@ -189,6 +192,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
       {/* Benefits Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
+          
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-4xl font-bold text-gray-900 mb-8">
@@ -204,6 +208,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
               </div>
             </div>
             <div>
+              
               <img
                 src="https://images.pexels.com/photos/3184431/pexels-photo-3184431.jpeg?auto=compress&cs=tinysrgb&w=1200"
                 alt="Analyse et statistiques"
@@ -305,7 +310,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
             </div>
           </div>
           <div className="border-t border-gray-800 pt-8 text-center text-sm">
-            <p>© 2025 Portail RH. Tous droits réservés.</p>
+            <p>© 2025 Groupe 10 GRH. Tous droits réservés.</p>
           </div>
         </div>
       </footer>
