@@ -14,6 +14,7 @@ import {
   Building2,
   Settings,
 } from 'lucide-react';
+import Logo from './Logo';
 
 interface LayoutProps {
   children: ReactNode;
@@ -51,14 +52,15 @@ export default function Layout({ children, currentView, onViewChange }: LayoutPr
       <nav className="bg-white border-b border-gray-200 fixed w-full z-30 top-0">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
-            <div className="flex items-center">
+            <div className="flex items-center space-x-4">
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
                 className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
               >
                 {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
-              <h1 className="ml-4 text-xl font-bold text-gray-800">
+              <Logo size="sm" showText={false} variant="dark" />
+              <h1 className="text-xl font-bold text-gray-800">
                 Gestion RH
               </h1>
             </div>

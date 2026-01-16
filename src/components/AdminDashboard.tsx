@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Users, Calendar, Clock, TrendingUp, UserPlus, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { employeeApi, leaveApi, serviceApi } from '../services/api';
 import { Employee, LeaveRequest, Service } from '../types';
+import Logo from './Logo';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
@@ -51,9 +52,12 @@ export default function AdminDashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-gray-800">
-            Tableau de bord Administrateur
-          </h2>
+          <div className="flex items-center space-x-3 mb-2">
+            <Logo size="sm" showText={false} variant="dark" />
+            <h2 className="text-3xl font-bold text-gray-800">
+              Tableau de bord Administrateur
+            </h2>
+          </div>
           <p className="text-gray-600 mt-1">
             Bienvenue, {user?.name} - Vue d'ensemble complète du système RH
           </p>

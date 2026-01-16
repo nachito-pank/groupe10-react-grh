@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Calendar, Clock, Award, GraduationCap, User, CheckCircle } from 'lucide-react';
-import { leaveApi } from '../services/api';
-import { LeaveRequest } from '../types';
+import { Calendar, Clock, Award, GraduationCap, User, CheckCircle, Mail, Briefcase, MapPin } from 'lucide-react';
+import { employeeApi, leaveApi } from '../services/api';
+import { LeaveRequest, Employee } from '../types';
+import Logo from './Logo';
 
 export default function EmployeeDashboard() {
   const { user } = useAuth();
+  const [profile, setProfile] = useState<Employee | null>(null);
   const [leaves, setLeaves] = useState<LeaveRequest[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -15,7 +17,12 @@ export default function EmployeeDashboard() {
 
   const loadData = async () => {
     try {
-      const leavesData = await leaveApi.getAll();
+      const [profileData, leavesData] = await Promise.all([
+        employeeApi.getProfile().catch(() => null),
+        leaveApi.getAll(),
+      ]);
+      
+      setProfile(profileData);
       setLeaves(leavesData.filter(leave => leave.employe?.id === user?.id));
     } catch (error) {
       console.error('Error loading employee dashboard data:', error);
@@ -45,10 +52,11 @@ export default function EmployeeDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Welcome Section with Logo */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-8 shadow-lg text-white">
         <div className="flex items-center space-x-4">
           <div className="bg-white bg-opacity-20 backdrop-blur p-4 rounded-full">
-            <User className="w-12 h-12" />
+            <Logo size="md" showText={false} variant="light" />
           </div>
           <div>
             <h2 className="text-3xl font-bold">
@@ -60,6 +68,81 @@ export default function EmployeeDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Mon Profil Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-8 shadow-lg text-white relative overflow-hidden">
+            {/* Background decoration */}
+            <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500 rounded-full -mr-20 -mt-20 opacity-20"></div>
+            
+            <div className="relative z-10">
+              <div className="flex items-start justify-between mb-8">
+                <div>
+                  <h2 className="text-3xl font-bold mb-2">
+                    Mon Profil
+                  </h2>
+                  <p className="text-blue-100">
+                    Vos informations personnelles
+                  </p>
+                </div>
+                <div className="bg-white bg-opacity-20 backdrop-blur p-4 rounded-full">
+                  <User className="w-12 h-12" />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <User className="w-5 h-5 text-blue-200" />
+                  <div>
+                    <p className="text-blue-100 text-sm">Nom</p>
+                    <p className="font-semibold">{profile?.name || user?.name || 'Non disponible'}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <Mail className="w-5 h-5 text-blue-200" />
+                  <div>
+                    <p className="text-blue-100 text-sm">Email</p>
+                    <p className="font-semibold">{profile?.email || user?.email || 'Non disponible'}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <Briefcase className="w-5 h-5 text-blue-200" />
+                  <div>
+                    <p className="text-blue-100 text-sm">Service</p>
+                    <p className="font-semibold">{profile?.service?.nom || 'Non assigné'}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <MapPin className="w-5 h-5 text-blue-200" />
+                  <div>
+                    <p className="text-blue-100 text-sm">Rôle</p>
+                    <p className="font-semibold capitalize">{profile?.role || user?.role || 'Non disponible'}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 h-full">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="bg-blue-100 p-3 rounded-lg">
+                <User className="w-6 h-6 text-blue-600" />
+              </div>
+              <h3 className="font-semibold text-gray-800">ID Employé</h3>
+            </div>
+            <div className="text-3xl font-bold text-gray-800 mb-2">{profile?.id || 'N/A'}</div>
+            <p className="text-sm text-gray-600">Numéro unique d'identification</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Cards Section */}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition">

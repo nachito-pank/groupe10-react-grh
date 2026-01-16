@@ -3,7 +3,7 @@ import { LeaveRequest } from '../types';
 import { leaveApi } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { Calendar, Plus, Check, X } from 'lucide-react';
+import { Calendar, Plus, Check, X, Trash2 } from 'lucide-react';
 
 export default function LeaveManagement() {
   const { isAdmin, user } = useAuth();
@@ -24,6 +24,8 @@ export default function LeaveManagement() {
   const loadLeaves = async () => {
     try {
       const data = await leaveApi.getAll();
+      console.log('📋 Leaves loaded:', data);
+      console.log('First leave:', data[0]?.employe);
       setLeaves(data.filter(leave => isAdmin || leave.employe?.id === user?.id));
     } catch (error) {
       console.error('Error loading leaves:', error);
@@ -54,6 +56,19 @@ export default function LeaveManagement() {
     } catch (error: any) {
       console.error('Error updating leave status:', error);
       showToast(error?.message || 'Erreur lors de la mise à jour du statut', 'error');
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cette demande de congé ?')) return;
+
+    try {
+      await leaveApi.delete(id);
+      setLeaves(leaves.filter((l) => l.id !== id));
+      showToast('Demande de congé supprimée avec succès', 'success');
+    } catch (err: any) {
+      console.error('Error deleting leave:', err);
+      showToast(err?.message || 'Erreur lors de la suppression', 'error');
     }
   };
 
@@ -184,7 +199,7 @@ export default function LeaveManagement() {
                   {isAdmin && (
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        {leave.employe?.name || '-'}
+                        {leave.employe?.name || `ID: ${leave.employe_id}`}
                       </div>
                     </td>
                   )}
@@ -217,24 +232,33 @@ export default function LeaveManagement() {
                   </td>
                   {isAdmin && (
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      {leave.status === 'pending' && (
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => handleStatusUpdate(leave.id, 'approved')}
-                            className="p-1 text-green-600 hover:bg-green-50 rounded transition"
-                            title="Approuver"
-                          >
-                            <Check className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() => handleStatusUpdate(leave.id, 'rejected')}
-                            className="p-1 text-red-600 hover:bg-red-50 rounded transition"
-                            title="Rejeter"
-                          >
-                            <X className="w-5 h-5" />
-                          </button>
-                        </div>
-                      )}
+                      <div className="flex space-x-2">
+                        {leave.status === 'pending' && (
+                          <>
+                            <button
+                              onClick={() => handleStatusUpdate(leave.id, 'approved')}
+                              className="p-1 text-green-600 hover:bg-green-50 rounded transition"
+                              title="Approuver"
+                            >
+                              <Check className="w-5 h-5" />
+                            </button>
+                            <button
+                              onClick={() => handleStatusUpdate(leave.id, 'rejected')}
+                              className="p-1 text-red-600 hover:bg-red-50 rounded transition"
+                              title="Rejeter"
+                            >
+                              <X className="w-5 h-5" />
+                            </button>
+                          </>
+                        )}
+                        <button
+                          onClick={() => handleDelete(leave.id)}
+                          className="p-1 text-red-600 hover:bg-red-50 rounded transition"
+                          title="Supprimer"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </div>
                     </td>
                   )}
                 </tr>

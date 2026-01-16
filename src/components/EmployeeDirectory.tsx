@@ -3,7 +3,7 @@ import { Employee, Service } from '../types';
 import { employeeApi, serviceApi } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { Users, Search, Mail, Building2, Plus } from 'lucide-react';
+import { Users, Search, Mail, Building2, Plus, Hash } from 'lucide-react';
 
 export default function EmployeeDirectory() {
   const { isAdmin } = useAuth();
@@ -332,6 +332,10 @@ export default function EmployeeDirectory() {
               </div>
             </div>
             <div className="mt-4 space-y-2">
+              <div className="flex items-center text-sm text-gray-600">
+                <Hash className="w-4 h-4 mr-2 flex-shrink-0" />
+                <span className="truncate">ID: {employee.id}</span>
+              </div>
               <div className="flex items-center text-sm text-gray-600">
                 <Mail className="w-4 h-4 mr-2 flex-shrink-0" />
                 <span className="truncate">{employee.email}</span>

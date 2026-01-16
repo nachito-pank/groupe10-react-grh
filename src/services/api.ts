@@ -159,6 +159,29 @@ export const authApi = {
 };
 
 export const employeeApi = {
+  getProfile: async (): Promise<Employee> => {
+    const response = await fetch(`${base_url}/api/groupe-10/mon-profil`, {
+      headers: getAuthHeaders(),
+    });
+    const data: any = await handleResponse<any>(response);
+    
+    // Normaliser la réponse du profil
+    const profile = Array.isArray(data) ? data[0] : (data?.data || data);
+    const name = profile.name || profile.user?.name || profile.nom || '';
+    const email = profile.email || profile.user?.email || '';
+    
+    return {
+      id: profile.id ?? profile.user?.id ?? 0,
+      user_id: profile.user_id ?? profile.user?.id ?? 0,
+      name,
+      email,
+      role: profile.role ?? profile.user?.role ?? 'employe',
+      service_id: profile.service_id ?? profile.user?.service_id ?? profile.service?.id ?? 0,
+      service: profile.service ?? undefined,
+      created_at: profile.created_at ?? profile.createdAt ?? '',
+    } as Employee;
+  },
+
   getAll: async (): Promise<Employee[]> => {
     const response = await fetch(`${base_url}/api/groupe-10/employes`, {
       headers: getAuthHeaders(),
@@ -323,7 +346,63 @@ export const leaveApi = {
     const response = await fetch(`${base_url}/api/groupe-10/conges`, {
       headers: getAuthHeaders(),
     });
-    return handleResponse<LeaveRequest[]>(response);
+
+    // Récupérer la réponse brute et la dénormaliser si nécessaire
+    const data: any = await handleResponse<any>(response);
+    console.log('📋 Raw leave data from API:', data);
+
+    // Si ce n'est pas un tableau, essayer d'extraire un tableau
+    let arr: any[] = Array.isArray(data) ? data : [];
+    if (!Array.isArray(data)) {
+      if (data && typeof data === 'object') {
+        if (Array.isArray(data.data)) arr = data.data;
+        else if (Array.isArray(data.conges)) arr = data.conges;
+        else if (Array.isArray(data.leaves)) arr = data.leaves;
+      }
+    }
+
+    console.log('📋 Extracted leaves array:', arr);
+
+    // Charger les employés pour enrichir les congés
+    let employees: Employee[] = [];
+    try {
+      employees = await employeeApi.getAll();
+      console.log('👥 Loaded employees:', employees);
+    } catch (e) {
+      console.warn('Could not load employees for leave enrichment', e);
+    }
+
+    // Enrichir chaque congé avec les informations de l'employé
+    const normalized: LeaveRequest[] = arr.map((item: any) => {
+      // Si les données de l'employé ne sont pas dans le congé, chercher dans la liste chargée
+      let employe = item.employe || item.employee || item.user;
+      console.log(`🔍 Leave ${item.id}: employe_id=${item.employe_id}, found employe:`, employe);
+
+      if (!employe && item.employe_id) {
+        employe = employees.find(e => e.id === item.employe_id);
+        console.log(`   After search with employe_id=${item.employe_id}:`, employe);
+      }
+
+      return {
+        id: item.id ?? 0,
+        employe_id: item.employe_id ?? item.employee_id ?? item.user_id ?? 0,
+        date_debut: item.date_debut ?? item.dateDebut ?? '',
+        date_fin: item.date_fin ?? item.dateFin ?? '',
+        raison: item.raison ?? item.reason ?? '',
+        status: item.status ?? 'pending',
+        employe: employe ? {
+          id: employe.id ?? 0,
+          name: employe.name || employe.nom || '',
+          email: employe.email || '',
+          role: employe.role || 'employe',
+          service_id: employe.service_id ?? 0,
+        } : undefined,
+        created_at: item.created_at ?? item.createdAt ?? '',
+      } as LeaveRequest;
+    });
+
+    console.log('✅ Final normalized leaves:', normalized);
+    return normalized;
   },
 
   getById: async (id: number): Promise<LeaveRequest> => {
@@ -343,7 +422,26 @@ export const leaveApi = {
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
     });
-    return handleResponse<LeaveRequest>(response);
+    const item: any = await handleResponse<any>(response);
+
+    // Enrichir avec les informations de l'employé
+    const employe = item.employe || item.employee || item.user;
+    return {
+      id: item.id ?? 0,
+      employe_id: item.employe_id ?? item.employee_id ?? item.user_id ?? 0,
+      date_debut: item.date_debut ?? item.dateDebut ?? '',
+      date_fin: item.date_fin ?? item.dateFin ?? '',
+      raison: item.raison ?? item.reason ?? '',
+      status: item.status ?? 'pending',
+      employe: employe ? {
+        id: employe.id ?? 0,
+        name: employe.name || employe.nom || '',
+        email: employe.email || '',
+        role: employe.role || 'employe',
+        service_id: employe.service_id ?? 0,
+      } : undefined,
+      created_at: item.created_at ?? item.createdAt ?? '',
+    } as LeaveRequest;
   },
 
   updateStatus: async (id: number, status: 'approved' | 'rejected'): Promise<LeaveRequest> => {
@@ -352,7 +450,34 @@ export const leaveApi = {
       headers: getAuthHeaders(),
       body: JSON.stringify({ status }),
     });
-    return handleResponse<LeaveRequest>(response);
+    const item: any = await handleResponse<any>(response);
+
+    // Enrichir avec les informations de l'employé
+    const employe = item.employe || item.employee || item.user;
+    return {
+      id: item.id ?? 0,
+      employe_id: item.employe_id ?? item.employee_id ?? item.user_id ?? 0,
+      date_debut: item.date_debut ?? item.dateDebut ?? '',
+      date_fin: item.date_fin ?? item.dateFin ?? '',
+      raison: item.raison ?? item.reason ?? '',
+      status: item.status ?? 'pending',
+      employe: employe ? {
+        id: employe.id ?? 0,
+        name: employe.name || employe.nom || '',
+        email: employe.email || '',
+        role: employe.role || 'employe',
+        service_id: employe.service_id ?? 0,
+      } : undefined,
+      created_at: item.created_at ?? item.createdAt ?? '',
+    } as LeaveRequest;
+  },
+
+  delete: async (id: number): Promise<void> => {
+    const response = await fetch(`${base_url}/api/groupe-10/admin/conges/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    return handleResponse<void>(response);
   },
 };
 

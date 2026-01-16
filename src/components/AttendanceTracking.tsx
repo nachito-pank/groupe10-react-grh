@@ -6,6 +6,7 @@ import { useToast } from '../contexts/ToastContext';
 
 export default function AttendanceTracking() {
   useAuth(); // we don't need user here but keep auth available if needed later
+  const { showToast } = useToast();
   const [attendance, setAttendance] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -29,9 +30,9 @@ export default function AttendanceTracking() {
       const date = new Date().toISOString().split('T')[0];
       const record: any = await attendanceApi.record({ date, heure_arrivee: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), status: 'present' });
       setAttendance((prev) => [record, ...prev]);
+      showToast('Présence enregistrée avec succès', 'success');
     } catch (error: any) {
       console.error('Error recording attendance:', error);
-      const { showToast } = useToast();
       showToast(error?.message || "Impossible d'enregistrer la présence", 'error');
     }
   };
