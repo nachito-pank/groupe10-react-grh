@@ -11,6 +11,8 @@ import {
   Menu,
   X,
   Home,
+  Building2,
+  Settings,
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -20,9 +22,9 @@ interface LayoutProps {
 }
 
 export default function Layout({ children, currentView, onViewChange }: LayoutProps) {
-  const { user, logout, isAdmin } = useAuth();
+  const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  
+
   const menuItems = [
     { id: 'dashboard', label: 'Tableau de bord', icon: Home, roles: ['admin', 'employe'] },
     { id: 'directory', label: 'Annuaire', icon: Users, roles: ['admin', 'employe'] },
@@ -31,6 +33,9 @@ export default function Layout({ children, currentView, onViewChange }: LayoutPr
     { id: 'performance', label: 'Évaluations', icon: Award, roles: ['admin', 'employe'] },
     { id: 'training', label: 'Formations', icon: GraduationCap, roles: ['admin', 'employe'] },
     { id: 'statistics', label: 'Statistiques', icon: BarChart3, roles: ['admin'] },
+    { id: 'divider', label: '', icon: null, roles: ['admin'] },
+    { id: 'employees', label: 'Gestion employés', icon: Users, roles: ['admin'] },
+    { id: 'services', label: 'Gestion services', icon: Building2, roles: ['admin'] },
   ];
 
   const filteredMenuItems = menuItems.filter((item) =>
@@ -82,6 +87,9 @@ export default function Layout({ children, currentView, onViewChange }: LayoutPr
         >
           <nav className="p-4 space-y-1">
             {filteredMenuItems.map((item) => {
+              if (item.id === 'divider') {
+                return <div key="divider" className="border-t border-gray-200 my-2" />;
+              }
               const Icon = item.icon;
               const isActive = currentView === item.id;
               return (
@@ -93,10 +101,9 @@ export default function Layout({ children, currentView, onViewChange }: LayoutPr
                   }}
                   className={`
                     w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition
-                    ${
-                      isActive
-                        ? 'bg-blue-50 text-blue-600'
-                        : 'text-gray-700 hover:bg-gray-100'
+                    ${isActive
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'text-gray-700 hover:bg-gray-100'
                     }
                   `}
                 >

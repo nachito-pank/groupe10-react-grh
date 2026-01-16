@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ToastProvider } from './contexts/ToastContext';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import LandingPage from './components/LandingPage';
 import Layout from './components/Layout';
-import Dashboard from './components/Dashboard';
+import AdminDashboard from './components/AdminDashboard';
+import EmployeeDashboard from './components/EmployeeDashboard';
 import EmployeeDirectory from './components/EmployeeDirectory';
+import EmployeeManagement from './components/EmployeeManagement';
+import ServiceManagement from './components/ServiceManagement';
 import LeaveManagement from './components/LeaveManagement';
 import AttendanceTracking from './components/AttendanceTracking';
 import PerformanceReview from './components/PerformanceReview';
@@ -13,7 +17,7 @@ import TrainingManagement from './components/TrainingManagement';
 import Statistics from './components/Statistics';
 
 function AppContent() {
-  const { user, isLoading } = useAuth();
+  const { user, isAdmin, isLoading } = useAuth();
   const [currentView, setCurrentView] = useState('dashboard');
   const [authView, setAuthView] = useState<'landing' | 'login' | 'register'>('landing');
 
@@ -40,9 +44,13 @@ function AppContent() {
   const renderView = () => {
     switch (currentView) {
       case 'dashboard':
-        return <Dashboard />;
+        return isAdmin ? <AdminDashboard /> : <EmployeeDashboard />;
       case 'directory':
         return <EmployeeDirectory />;
+      case 'employees':
+        return <EmployeeManagement />;
+      case 'services':
+        return <ServiceManagement />;
       case 'leaves':
         return <LeaveManagement />;
       case 'attendance':
@@ -54,7 +62,7 @@ function AppContent() {
       case 'statistics':
         return <Statistics />;
       default:
-        return <Dashboard />;
+        return isAdmin ? <AdminDashboard /> : <EmployeeDashboard />;
     }
   };
 
@@ -67,9 +75,11 @@ function AppContent() {
 
 function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </ToastProvider>
   );
 }
 

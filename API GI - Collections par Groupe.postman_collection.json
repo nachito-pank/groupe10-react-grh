@@ -1,0 +1,3061 @@
+{
+	"info": {
+		"_postman_id": "2dfb5549-8e9e-4bd9-b41d-00b6a546fa84",
+		"name": "API GI - Collections par Groupe",
+		"description": "Collection Postman pour les 10 projets étudiants avec routes organisées par groupe",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "50742503",
+		"_collection_link": "https://lgoteni-team.postman.co/workspace/cd76d317-2dc0-4ba6-8da6-185c63aa5137/collection/50742503-2dfb5549-8e9e-4bd9-b41d-00b6a546fa84?action=share&source=collection_link&creator=50742503"
+	},
+	"item": [
+		{
+			"name": "Upload Fichiers",
+			"item": [
+				{
+					"name": "Upload Image",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "groupe",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "product",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/upload/image",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"upload",
+								"image"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Fichier",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "groupe",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "document",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/upload/file",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"upload",
+								"file"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer Fichier",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"path\": \"groupe-1/product/filename.jpg\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/upload/file",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"upload",
+								"file"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Groupe 1 - E-commerce",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Register",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-1/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-1",
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"if (pm.response.code === 200) {",
+											"    var jsonData = pm.response.json();",
+											"    pm.environment.set(\"token\", jsonData.token);",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"john@example.com\",\n    \"password\": \"password123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-1/auth/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-1",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Logout",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-1/auth/logout",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-1",
+										"auth",
+										"logout"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Products",
+					"item": [
+						{
+							"name": "Liste Produits",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-1/products?search=&sort_by=created_at&sort_order=desc",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-1",
+										"products"
+									],
+									"query": [
+										{
+											"key": "search",
+											"value": ""
+										},
+										{
+											"key": "sort_by",
+											"value": "created_at"
+										},
+										{
+											"key": "sort_order",
+											"value": "desc"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Détails Produit",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-1/products/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-1",
+										"products",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Créer Produit (Admin)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Nouveau Produit\",\n    \"description\": \"Description du produit\",\n    \"price\": 99.99,\n    \"stock\": 10,\n    \"image\": \"https://example.com/image.jpg\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-1/admin/products",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-1",
+										"admin",
+										"products"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Modifier Produit (Admin)",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Produit Modifié\",\n    \"price\": 89.99\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-1/admin/products/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-1",
+										"admin",
+										"products",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Supprimer Produit (Admin)",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-1/admin/products/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-1",
+										"admin",
+										"products",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Cart",
+					"item": [
+						{
+							"name": "Voir Panier",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-1/cart",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-1",
+										"cart"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Ajouter au Panier",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"product_id\": 1,\n    \"quantity\": 2\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-1/cart",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-1",
+										"cart"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Modifier Quantité",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"quantity\": 3\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-1/cart/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-1",
+										"cart",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retirer du Panier",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-1/cart/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-1",
+										"cart",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Orders",
+					"item": [
+						{
+							"name": "Liste Commandes",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-1/orders",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-1",
+										"orders"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Créer Commande",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-1/orders",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-1",
+										"orders"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Détails Commande",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-1/orders/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-1",
+										"orders",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Groupe 2 - Gestion Scolaire",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Register",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Prof Martin\",\n    \"email\": \"prof@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\",\n    \"role\": \"professeur\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-2/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-2",
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"prof@example.com\",\n    \"password\": \"password123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-2/auth/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-2",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Matières",
+					"item": [
+						{
+							"name": "Liste Matières",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-2/matieres",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-2",
+										"matieres"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Créer Matière",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"nom\": \"Mathématiques\",\n    \"description\": \"Cours de mathématiques\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-2/matieres",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-2",
+										"matieres"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Notes",
+					"item": [
+						{
+							"name": "Liste Notes",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-2/notes",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-2",
+										"notes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Créer Note (Prof)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"etudiant_id\": 1,\n    \"matiere_id\": 1,\n    \"note\": 15.5,\n    \"commentaire\": \"Bon travail\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-2/notes",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-2",
+										"notes"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Dashboard Admin",
+					"item": [
+						{
+							"name": "Statistiques",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-2/admin/dashboard",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-2",
+										"admin",
+										"dashboard"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Groupe 3 - Réservation",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Register",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"User\",\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\",\n    \"role\": \"user\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-3/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-3",
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-3/auth/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-3",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Salles",
+					"item": [
+						{
+							"name": "Liste Salles",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-3/salles",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-3",
+										"salles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Créer Salle (Admin)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"nom\": \"Salle A\",\n    \"capacite\": 20,\n    \"equipements\": \"Projecteur, Tableau\",\n    \"description\": \"Salle de réunion\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-3/admin/salles",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-3",
+										"admin",
+										"salles"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Réservations",
+					"item": [
+						{
+							"name": "Liste Réservations",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-3/reservations",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-3",
+										"reservations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Créer Réservation",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"salle_id\": 1,\n    \"date_debut\": \"2025-12-15 10:00:00\",\n    \"date_fin\": \"2025-12-15 12:00:00\",\n    \"raison\": \"Réunion équipe\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-3/reservations",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-3",
+										"reservations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Calendrier",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-3/reservations/calendrier?salle_id=1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-3",
+										"reservations",
+										"calendrier"
+									],
+									"query": [
+										{
+											"key": "salle_id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Annuler Réservation",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-3/reservations/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-3",
+										"reservations",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Groupe 4 - Réseau Social",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Register",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Alice\",\n    \"email\": \"alice@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-4/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-4",
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"alice@example.com\",\n    \"password\": \"password123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-4/auth/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-4",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Posts",
+					"item": [
+						{
+							"name": "Liste Posts",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-4/posts",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-4",
+										"posts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Créer Post",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"contenu\": \"Mon premier post !\",\n    \"image\": \"https://example.com/image.jpg\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-4/posts",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-4",
+										"posts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Like Post",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-4/posts/1/like",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-4",
+										"posts",
+										"1",
+										"like"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Unlike Post",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-4/posts/1/like",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-4",
+										"posts",
+										"1",
+										"like"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Feed",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-4/feed",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-4",
+										"feed"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Comments",
+					"item": [
+						{
+							"name": "Commenter Post",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"contenu\": \"Super post !\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-4/posts/1/comments",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-4",
+										"posts",
+										"1",
+										"comments"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Liste Commentaires",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-4/posts/1/comments",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-4",
+										"posts",
+										"1",
+										"comments"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Profil",
+					"item": [
+						{
+							"name": "Voir Profil",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-4/profil",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-4",
+										"profil"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Modifier Profil",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"bio\": \"Ma bio\",\n    \"avatar\": \"https://example.com/avatar.jpg\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-4/profil",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-4",
+										"profil"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Groupe 5 - Gestion Tâches",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Register",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Bob\",\n    \"email\": \"bob@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-5/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-5",
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"bob@example.com\",\n    \"password\": \"password123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-5/auth/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-5",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Projets",
+					"item": [
+						{
+							"name": "Liste Projets",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-5/projets",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-5",
+										"projets"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Créer Projet",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"nom\": \"Projet Web\",\n    \"description\": \"Développement site web\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-5/projets",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-5",
+										"projets"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Tâches",
+					"item": [
+						{
+							"name": "Liste Tâches",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-5/projets/1/taches",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-5",
+										"projets",
+										"1",
+										"taches"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Créer Tâche",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"titre\": \"Créer la page d'accueil\",\n    \"description\": \"Design et développement\",\n    \"priorite\": \"high\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-5/projets/1/taches",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-5",
+										"projets",
+										"1",
+										"taches"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Changer Status",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"status\": \"doing\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-5/taches/1/status",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-5",
+										"taches",
+										"1",
+										"status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Attribuer Tâche",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user_id\": 2\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-5/taches/1/assign",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-5",
+										"taches",
+										"1",
+										"assign"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Groupe 6 - Apprentissage",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Register Étudiant",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Étudiant\",\n    \"email\": \"etudiant@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\",\n    \"role\": \"etudiant\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-6/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-6",
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register Formateur",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Formateur\",\n    \"email\": \"formateur@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\",\n    \"role\": \"formateur\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-6/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-6",
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Cours",
+					"item": [
+						{
+							"name": "Liste Cours",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-6/cours",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-6",
+										"cours"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Créer Cours (Formateur)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"titre\": \"Cours PHP\",\n    \"description\": \"Apprendre PHP\",\n    \"image\": \"https://example.com/image.jpg\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-6/formateur/cours",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-6",
+										"formateur",
+										"cours"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Leçons",
+					"item": [
+						{
+							"name": "Liste Leçons",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-6/etudiant/cours/1/lecons",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-6",
+										"etudiant",
+										"cours",
+										"1",
+										"lecons"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Créer Leçon (Formateur)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"titre\": \"Introduction\",\n    \"contenu\": \"Contenu de la leçon\",\n    \"video_url\": \"https://youtube.com/watch?v=...\",\n    \"ordre\": 1\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-6/formateur/cours/1/lecons",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-6",
+										"formateur",
+										"cours",
+										"1",
+										"lecons"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Progression",
+					"item": [
+						{
+							"name": "Liste Progression",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-6/etudiant/progression",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-6",
+										"etudiant",
+										"progression"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Enregistrer Progression",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"lecon_id\": 1,\n    \"termine\": true\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-6/etudiant/progression",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-6",
+										"etudiant",
+										"progression"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Groupe 7 - Budget",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Register",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"User\",\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-7/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-7",
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-7/auth/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-7",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Transactions",
+					"item": [
+						{
+							"name": "Liste Transactions",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-7/transactions",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-7",
+										"transactions"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Créer Transaction",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"type\": \"depense\",\n    \"montant\": 50.00,\n    \"categorie_id\": 1,\n    \"date\": \"2025-12-11\",\n    \"description\": \"Achat courses\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-7/transactions",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-7",
+										"transactions"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Catégories",
+					"item": [
+						{
+							"name": "Liste Catégories",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-7/categories",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-7",
+										"categories"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Créer Catégorie",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"nom\": \"Alimentation\",\n    \"type\": \"depense\",\n    \"couleur\": \"#FF5733\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-7/categories",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-7",
+										"categories"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Statistiques",
+					"item": [
+						{
+							"name": "Statistiques Générales",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-7/statistiques",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-7",
+										"statistiques"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Statistiques par Catégorie",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-7/statistiques/by-categorie",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-7",
+										"statistiques",
+										"by-categorie"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Groupe 8 - Avis Restaurants/Hôtels",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Register",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"User\",\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-8/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-8",
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-8/auth/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-8",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Établissements",
+					"item": [
+						{
+							"name": "Liste Établissements",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-8/etablissements?sort_by=note",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-8",
+										"etablissements"
+									],
+									"query": [
+										{
+											"key": "sort_by",
+											"value": "note"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Détails Établissement",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-8/etablissements/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-8",
+										"etablissements",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Créer Établissement (Admin)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"nom\": \"Restaurant Le Bon\",\n    \"type\": \"restaurant\",\n    \"adresse\": \"123 Rue de la Gastronomie\",\n    \"telephone\": \"01 23 45 67 89\",\n    \"description\": \"Restaurant français\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-8/admin/etablissements",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-8",
+										"admin",
+										"etablissements"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Avis",
+					"item": [
+						{
+							"name": "Liste Avis",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-8/etablissements/1/avis",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-8",
+										"etablissements",
+										"1",
+										"avis"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Créer Avis",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"note\": 5,\n    \"commentaire\": \"Excellent restaurant !\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-8/etablissements/1/avis",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-8",
+										"etablissements",
+										"1",
+										"avis"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Groupe 9 - Événements",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Register",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"User\",\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-9/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-9",
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-9/auth/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-9",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Événements",
+					"item": [
+						{
+							"name": "Liste Événements",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-9/evenements?categorie=concert",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-9",
+										"evenements"
+									],
+									"query": [
+										{
+											"key": "categorie",
+											"value": "concert"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Détails Événement",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-9/evenements/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-9",
+										"evenements",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Créer Événement (Admin)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"titre\": \"Concert Jazz\",\n    \"description\": \"Concert de jazz en plein air\",\n    \"date\": \"2025-12-20 20:00:00\",\n    \"lieu\": \"Parc Central\",\n    \"categorie\": \"concert\",\n    \"capacite_max\": 100\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-9/admin/evenements",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-9",
+										"admin",
+										"evenements"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Inscriptions",
+					"item": [
+						{
+							"name": "Mes Inscriptions",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-9/mes-inscriptions",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-9",
+										"mes-inscriptions"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "S'inscrire à un Événement",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-9/evenements/1/inscription",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-9",
+										"evenements",
+										"1",
+										"inscription"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Se Désinscrire",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-9/evenements/1/inscription",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-9",
+										"evenements",
+										"1",
+										"inscription"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Groupe 10 - Plateforme RH",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Register Admin",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Admin\",\n    \"email\": \"admin@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\",\n    \"role\": \"admin\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-10/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-10",
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register Employé",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Employé\",\n    \"email\": \"employe@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\",\n    \"role\": \"employe\",\n    \"service_id\": 1\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-10/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-10",
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"password123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-10/auth/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-10",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Employés",
+					"item": [
+						{
+							"name": "Liste Employés",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-10/employes",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-10",
+										"employes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Mon Profil",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-10/mon-profil",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-10",
+										"mon-profil"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Créer Employé (Admin)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user_id\": 1,\n    \"role\": \"employe\",\n    \"service_id\": 1\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-10/admin/employes",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-10",
+										"admin",
+										"employes"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Services",
+					"item": [
+						{
+							"name": "Liste Services",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-10/services",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-10",
+										"services"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Créer Service (Admin)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"nom\": \"Ressources Humaines\",\n    \"description\": \"Service RH\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-10/admin/services",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-10",
+										"admin",
+										"services"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Congés",
+					"item": [
+						{
+							"name": "Liste Congés",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/groupe-10/conges",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-10",
+										"conges"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Demander Congé",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"date_debut\": \"2025-12-20\",\n    \"date_fin\": \"2025-12-25\",\n    \"raison\": \"Vacances\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-10/conges",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-10",
+										"conges"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Approuver/Rejeter Congé (Admin)",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"status\": \"approved\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/groupe-10/admin/conges/1/status",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"groupe-10",
+										"admin",
+										"conges",
+										"1",
+										"status"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

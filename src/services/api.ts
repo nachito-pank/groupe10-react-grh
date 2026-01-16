@@ -1,6 +1,8 @@
-import { ApiAuthResponse, AuthResponse, Employee, LeaveRequest, Service } from '../types';
+import { AuthResponse, Employee, LeaveRequest, Service } from '../types';
 
 const base_url = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+
+console.log('🔌 API Base URL:', base_url);
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
@@ -11,6 +13,7 @@ export class ApiError extends Error {
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
+  console.log('🔐 Token present:', !!token);
   return {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -20,10 +23,54 @@ const getAuthHeaders = () => {
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Une erreur est survenue' }));
-    throw new ApiError(response.status, error.message || 'Une erreur est survenue');
+    let errorData: any = { message: 'Une erreur est survenue' };
+    try {
+      errorData = await response.json();
+    } catch (e) {
+      // Si la réponse n'est pas JSON, utiliser le texte
+      try {
+        const text = await response.text();
+        console.error('Response text:', text);
+      } catch (e2) {
+        console.error('Could not read response');
+      }
+    }
+
+    const errorMessage = errorData?.message || errorData?.error || 'Une erreur est survenue';
+    console.error(`API Error [${response.status}]:`, errorData);
+    throw new ApiError(response.status, errorMessage);
   }
-  return response.json();
+
+  const json = await response.json();
+  console.log('📥 Raw response:', json);
+  console.log('📥 Response type:', Array.isArray(json) ? 'array' : typeof json);
+
+  // Normaliser la réponse - si c'est un objet avec une clé 'data', l'extraire
+  if (json && typeof json === 'object' && !Array.isArray(json)) {
+    // Chercher les clés communes de structure imbriquée
+    if ('data' in json) {
+      console.log('📥 Extracting data property');
+      return json.data as T;
+    }
+    if ('employes' in json) {
+      console.log('📥 Extracting employes property');
+      return json.employes as T;
+    }
+    if ('services' in json) {
+      console.log('📥 Extracting services property');
+      return json.services as T;
+    }
+    if ('conges' in json) {
+      console.log('📥 Extracting conges property');
+      return json.conges as T;
+    }
+    // Si c'est un objet mais qu'on attendait un array, logger l'erreur
+    if (Array.isArray(json) === false && typeof json === 'object') {
+      console.warn('⚠️ Response is an object but array was expected, returning as-is:', json);
+    }
+  }
+
+  return json as T;
 }
 
 export const authApi = {
@@ -45,7 +92,7 @@ export const authApi = {
 
   login: async (email: string, password: string): Promise<AuthResponse> => {
     const response = await fetch(
-      "https://api.react.nos-apps.com/api/groupe-10/auth/login",
+      `${base_url}/api/groupe-10/auth/login`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -53,16 +100,53 @@ export const authApi = {
       }
     );
 
-    if (!response.ok) {
-      throw new Error("Erreur login");
+    const raw = await response.text().catch(() => '');
+    let json: any = {};
+    try {
+      json = raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      console.warn('Login response not JSON:', raw);
+      throw new ApiError(response.status, 'Réponse inattendue du serveur');
     }
 
-    const json: ApiAuthResponse = await response.json();
+    console.log('🔍 API LOGIN JSON =', json);
 
-    console.log("🔍 API LOGIN JSON =", json);
+    // Try several common shapes and normalize the user shape to match `AuthResponse`
+    // 1) { success: boolean, data: { token, user } }
+    // 2) { token, user }
+    // 3) { data: { data: { token, user } } }
 
-    // 👇 ICI EST LA CORRECTION CRUCIALE
-    return json.data;
+    let authCandidate: any = null;
+    if (json?.data && json.data.token && json.data.user) {
+      authCandidate = json.data;
+    } else if (json?.token && json?.user) {
+      authCandidate = json;
+    } else if (json?.data?.data && json.data.data.token && json.data.data.user) {
+      authCandidate = json.data.data;
+    }
+
+    if (authCandidate) {
+      // Normalize user: some backends nest role/service in `groupe10_employe`
+      const rawUser: any = authCandidate.user || {};
+      const normalizedUser = {
+        id: rawUser.id,
+        name: rawUser.name || rawUser.nom || '',
+        email: rawUser.email,
+        // prefer direct role, fallback to nested groupe10_employe.role
+        role: (rawUser.role || rawUser.groupe10_employe?.role || '').toLowerCase() || 'employe',
+        service_id: rawUser.service_id ?? rawUser.groupe10_employe?.service_id ?? undefined,
+      } as any;
+
+      return { token: authCandidate.token, user: normalizedUser } as AuthResponse;
+    }
+
+    // Not ok
+    if (!response.ok) {
+      const errMsg = json?.message || json?.error || 'Erreur login';
+      throw new ApiError(response.status, errMsg);
+    }
+
+    throw new ApiError(response.status, 'Format de réponse inattendu pour login');
   },
 
   logout: async (): Promise<void> => {
@@ -79,7 +163,49 @@ export const employeeApi = {
     const response = await fetch(`${base_url}/api/groupe-10/employes`, {
       headers: getAuthHeaders(),
     });
-    return handleResponse<Employee[]>(response);
+
+    // On récupère la réponse brute (handleResponse gère unwraps courants)
+    const data: any = await handleResponse<any>(response);
+
+    // Si ce n'est pas déjà un tableau, tenter d'extraire un tableau connu
+    let arr: any[] = Array.isArray(data) ? data : [];
+    if (!Array.isArray(data)) {
+      if (data && typeof data === 'object') {
+        if (Array.isArray(data.data)) arr = data.data;
+        else if (Array.isArray(data.employes)) arr = data.employes;
+        else if (Array.isArray(data.employees)) arr = data.employees;
+        else {
+          // Fallback: essayer d'extraire les valeurs si l'objet contient des items
+          const vals = Object.values(data).filter((v) => Array.isArray(v));
+          if (vals.length > 0) arr = vals[0];
+        }
+      }
+    }
+
+    // Normaliser chaque entrée pour garantir `name` et `email` accessibles
+    const normalized: Employee[] = arr.map((item: any) => {
+      const name = item.name || item.user?.name || item.user?.nom || '';
+      const email = item.email || item.user?.email || '';
+      return {
+        id: item.id ?? item.user?.id ?? 0,
+        user_id: item.user_id ?? item.user?.id ?? 0,
+        name,
+        email,
+        role: item.role ?? item.user?.role ?? 'employe',
+        service_id: item.service_id ?? item.user?.service_id ?? item.service?.id ?? 0,
+        service: item.service ?? undefined,
+        created_at: item.created_at ?? item.createdAt ?? '',
+      } as Employee;
+    });
+
+    return normalized;
+  },
+
+  getById: async (id: number): Promise<Employee> => {
+    const response = await fetch(`${base_url}/api/groupe-10/employes/${id}`, {
+      headers: getAuthHeaders(),
+    });
+    return handleResponse<Employee>(response);
   },
 
   getProfile: async (): Promise<Employee> => {
@@ -95,7 +221,52 @@ export const employeeApi = {
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
     });
-    return handleResponse<Employee>(response);
+    const item: any = await handleResponse<any>(response);
+
+    // Normaliser la réponse pour garantir `name` et `email` accessibles
+    const name = item.name || item.user?.name || item.user?.nom || '';
+    const email = item.email || item.user?.email || '';
+    return {
+      id: item.id ?? item.user?.id ?? 0,
+      user_id: item.user_id ?? item.user?.id ?? 0,
+      name,
+      email,
+      role: item.role ?? item.user?.role ?? 'employe',
+      service_id: item.service_id ?? item.user?.service_id ?? item.service?.id ?? 0,
+      service: item.service ?? undefined,
+      created_at: item.created_at ?? item.createdAt ?? '',
+    } as Employee;
+  },
+
+  update: async (id: number, data: { user_id?: number; role?: string; service_id?: number }): Promise<Employee> => {
+    const response = await fetch(`${base_url}/api/groupe-10/admin/employes/${id}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data),
+    });
+    const item: any = await handleResponse<any>(response);
+
+    // Normaliser la réponse pour garantir `name` et `email` accessibles
+    const name = item.name || item.user?.name || item.user?.nom || '';
+    const email = item.email || item.user?.email || '';
+    return {
+      id: item.id ?? item.user?.id ?? 0,
+      user_id: item.user_id ?? item.user?.id ?? 0,
+      name,
+      email,
+      role: item.role ?? item.user?.role ?? 'employe',
+      service_id: item.service_id ?? item.user?.service_id ?? item.service?.id ?? 0,
+      service: item.service ?? undefined,
+      created_at: item.created_at ?? item.createdAt ?? '',
+    } as Employee;
+  },
+
+  delete: async (id: number): Promise<void> => {
+    const response = await fetch(`${base_url}/api/groupe-10/admin/employes/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    return handleResponse<void>(response);
   },
 };
 
@@ -107,13 +278,43 @@ export const serviceApi = {
     return handleResponse<Service[]>(response);
   },
 
+  getById: async (id: number): Promise<Service> => {
+    const response = await fetch(`${base_url}/api/groupe-10/services/${id}`, {
+      headers: getAuthHeaders(),
+    });
+    return handleResponse<Service>(response);
+  },
+
   create: async (data: { nom: string; description?: string }): Promise<Service> => {
-    const response = await fetch(`${base_url}/api/groupe-10/admin/services`, {
+    console.log('📤 Creating service with data:', data);
+    const url = `${base_url}/api/groupe-10/admin/services`;
+    console.log('📤 POST URL:', url);
+    const headers = getAuthHeaders();
+    console.log('📤 Headers:', { ...headers, Authorization: headers.Authorization ? '***' : 'none' });
+    const response = await fetch(url, {
       method: 'POST',
+      headers,
+      body: JSON.stringify(data),
+    });
+    console.log('📥 Response status:', response.status);
+    return handleResponse<Service>(response);
+  },
+
+  update: async (id: number, data: { nom?: string; description?: string }): Promise<Service> => {
+    const response = await fetch(`${base_url}/api/groupe-10/admin/services/${id}`, {
+      method: 'PUT',
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
     });
     return handleResponse<Service>(response);
+  },
+
+  delete: async (id: number): Promise<void> => {
+    const response = await fetch(`${base_url}/api/groupe-10/admin/services/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    return handleResponse<void>(response);
   },
 };
 
@@ -123,6 +324,13 @@ export const leaveApi = {
       headers: getAuthHeaders(),
     });
     return handleResponse<LeaveRequest[]>(response);
+  },
+
+  getById: async (id: number): Promise<LeaveRequest> => {
+    const response = await fetch(`${base_url}/api/groupe-10/conges/${id}`, {
+      headers: getAuthHeaders(),
+    });
+    return handleResponse<LeaveRequest>(response);
   },
 
   create: async (data: {
@@ -145,5 +353,128 @@ export const leaveApi = {
       body: JSON.stringify({ status }),
     });
     return handleResponse<LeaveRequest>(response);
+  },
+};
+
+// Additional APIs: Présences, Évaluations, Formations
+export const attendanceApi = {
+  getAll: async (): Promise<import('../types').Attendance[]> => {
+    try {
+      const response = await fetch(`${base_url}/api/groupe-10/presences`, {
+        headers: getAuthHeaders(),
+      });
+      return handleResponse<import('../types').Attendance[]>(response);
+    } catch (err: any) {
+      // fallback to local storage if backend endpoint is missing
+      const raw = localStorage.getItem('mock_attendance');
+      return raw ? JSON.parse(raw) : [];
+    }
+  },
+
+  record: async (data: { date: string; heure_arrivee: string; heure_depart?: string; status: 'present' | 'absent' | 'retard' }) => {
+    try {
+      const response = await fetch(`${base_url}/api/groupe-10/presences`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      return handleResponse<import('../types').Attendance>(response);
+    } catch (err) {
+      const raw = localStorage.getItem('mock_attendance');
+      const arr = raw ? JSON.parse(raw) : [];
+      const newRec = { id: Date.now(), ...data };
+      arr.unshift(newRec);
+      localStorage.setItem('mock_attendance', JSON.stringify(arr));
+      return newRec;
+    }
+  },
+};
+
+export const performanceApi = {
+  getAll: async (): Promise<import('../types').Performance[]> => {
+    try {
+      const response = await fetch(`${base_url}/api/groupe-10/evaluations`, {
+        headers: getAuthHeaders(),
+      });
+      return handleResponse<import('../types').Performance[]>(response);
+    } catch (err) {
+      const raw = localStorage.getItem('mock_performances');
+      return raw ? JSON.parse(raw) : [];
+    }
+  },
+
+  create: async (data: { employe_id: number; note: number; commentaire: string; evaluateur_id: number; date_evaluation?: string }) => {
+    try {
+      const response = await fetch(`${base_url}/api/groupe-10/admin/evaluations`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      return handleResponse<import('../types').Performance>(response);
+    } catch (err) {
+      const raw = localStorage.getItem('mock_performances');
+      const arr = raw ? JSON.parse(raw) : [];
+      const newRec = { id: Date.now(), date_evaluation: data.date_evaluation || new Date().toISOString(), note: data.note, commentaire: data.commentaire, employe_id: data.employe_id, evaluateur_id: data.evaluateur_id };
+      arr.unshift(newRec);
+      localStorage.setItem('mock_performances', JSON.stringify(arr));
+      return newRec;
+    }
+  },
+};
+
+export const trainingApi = {
+  getAll: async (): Promise<import('../types').Training[]> => {
+    try {
+      const response = await fetch(`${base_url}/api/groupe-10/formations`, {
+        headers: getAuthHeaders(),
+      });
+      return handleResponse<import('../types').Training[]>(response);
+    } catch (err) {
+      const raw = localStorage.getItem('mock_trainings');
+      return raw ? JSON.parse(raw) : [];
+    }
+  },
+
+  enroll: async (id: number, userId: number) => {
+    try {
+      const response = await fetch(`${base_url}/api/groupe-10/formations/${id}/inscriptions`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ user_id: userId }),
+      });
+      return handleResponse(response);
+    } catch (err) {
+      // local fallback: add userId to participants
+      const raw = localStorage.getItem('mock_trainings');
+      const arr = raw ? JSON.parse(raw) : [];
+      const tIndex = arr.findIndex((t: any) => t.id === id);
+      if (tIndex >= 0) {
+        arr[tIndex].participants = arr[tIndex].participants || [];
+        if (!arr[tIndex].participants.includes(userId)) arr[tIndex].participants.push(userId);
+        localStorage.setItem('mock_trainings', JSON.stringify(arr));
+      }
+      return { success: true };
+    }
+  },
+};
+
+export const statsApi = {
+  // Compute some statistics client-side using available endpoints
+  getOverview: async () => {
+    const [employees, leaves, performances] = await Promise.all([
+      employeeApi.getAll().catch(() => []),
+      leaveApi.getAll().catch(() => []),
+      performanceApi.getAll().catch(() => []),
+    ]);
+
+    const totalEmployees = employees.length;
+    const approvedLeaves = leaves.filter((l: any) => l.status === 'approved').length;
+    const avgNote = performances.length > 0 ? (performances.reduce((a: any, p: any) => a + p.note, 0) / performances.length) : 0;
+
+    return {
+      totalEmployees,
+      approvedLeaves,
+      avgNote: Number(avgNote.toFixed(2)),
+    };
   },
 };

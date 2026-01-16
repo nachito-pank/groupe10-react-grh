@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { LogIn, ArrowRight } from 'lucide-react';
 import SplineBackground from './SplineBackground';
 
@@ -12,7 +13,9 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const [asAdmin, setAsAdmin] = useState(false);
+  const { login, logout } = useAuth();
+  const { showToast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,8 +23,21 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
     setLoading(true);
 
     try {
-      await login(email, password);
+      const user = await login(email, password);
+
+      // Si l'utilisateur demande explicitement un accès admin, vérifier le rôle directement depuis l'utilisateur retourné
+      if (asAdmin && String(user.role || '').toLowerCase() !== 'admin') {
+        // Déconnecter et informer
+        await logout();
+        showToast("Accès administrateur refusé : les identifiants fournis ne correspondent pas à un compte administrateur.", 'error');
+        setError("Accès administrateur refusé : les identifiants fournis ne correspondent pas à un compte administrateur.");
+        return;
+      }
+
+      // Success
+      showToast('Connexion réussie', 'success');
     } catch (err) {
+      showToast('Email ou mot de passe incorrect', 'error');
       setError('Email ou mot de passe incorrect');
     } finally {
       setLoading(false);
@@ -29,12 +45,12 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   };
 
   return (
-    
+
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-slate-100 flex items-center justify-center p-4">
       {/* boutton retour a la  page d'acceuil */}
       <SplineBackground url="https://prod.spline.design/P9M2dlKhXebtaaFH/scene.splinecode" />
       <div className="absolute rounded-2xl shadow-xl w-full max-w-md p-8 bg-white blur-backdrop-filter backdrop-blur-md bg-opacity-60 max-h-screen overflow-y-auto">
-        
+
         <div className="flex items-center justify-center mb-8">
           <div className="bg-blue-600 p-3 rounded-xl">
             <LogIn className="w-8 h-8 text-white" />
@@ -85,6 +101,19 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
             />
           </div>
 
+          <div className="flex items-center space-x-2">
+            <input
+              id="asAdmin"
+              type="checkbox"
+              checked={asAdmin}
+              onChange={(e) => setAsAdmin(e.target.checked)}
+              className="h-4 w-4"
+            />
+            <label htmlFor="asAdmin" className="text-sm text-gray-700">
+              Se connecter en tant qu'administrateur
+            </label>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
@@ -96,7 +125,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         </form>
 
         <div className="mt-6 pt-6 border-t border-gray-200">
-          <p className="text-center text-sm  ">
+          <p className="text-center text-sm ">
             Pas encore de compte?{' '}
             <button
               onClick={onSwitchToRegister}
@@ -106,13 +135,13 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
             </button>
           </p>
         </div>
-          <br />
-          <button
-              onClick={() => window.location.href = '/'}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-white hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center space-x-2"
-            >
-              Retour à l'accueil
-          </button>
+        <br />
+        <button
+          onClick={() => window.location.href = '/'}
+          className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-white hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center space-x-2"
+        >
+          Retour à l'accueil
+        </button>
       </div>
     </div>
   );

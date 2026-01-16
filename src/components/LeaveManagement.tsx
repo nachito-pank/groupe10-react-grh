@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { LeaveRequest } from '../types';
 import { leaveApi } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { Calendar, Plus, Check, X } from 'lucide-react';
 
 export default function LeaveManagement() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, user } = useAuth();
+  const { showToast } = useToast();
   const [leaves, setLeaves] = useState<LeaveRequest[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -22,7 +24,7 @@ export default function LeaveManagement() {
   const loadLeaves = async () => {
     try {
       const data = await leaveApi.getAll();
-      setLeaves(data.filter(leave => isAdmin || leave.employe?.user_id === useAuth().user?.id));
+      setLeaves(data.filter(leave => isAdmin || leave.employe?.id === user?.id));
     } catch (error) {
       console.error('Error loading leaves:', error);
     } finally {
@@ -37,9 +39,10 @@ export default function LeaveManagement() {
       await loadLeaves();
       setShowForm(false);
       setFormData({ date_debut: '', date_fin: '', raison: '' });
-    } catch (error) {
+      showToast('Demande de congé soumise avec succès', 'success');
+    } catch (error: any) {
       console.error('Error creating leave request:', error);
-      alert('Erreur lors de la création de la demande');
+      showToast(error?.message || 'Erreur lors de la création de la demande', 'error');
     }
   };
 
@@ -47,9 +50,10 @@ export default function LeaveManagement() {
     try {
       await leaveApi.updateStatus(id, status);
       await loadLeaves();
-    } catch (error) {
+      showToast('Statut mis à jour', 'success');
+    } catch (error: any) {
       console.error('Error updating leave status:', error);
-      alert('Erreur lors de la mise à jour du statut');
+      showToast(error?.message || 'Erreur lors de la mise à jour du statut', 'error');
     }
   };
 
@@ -197,19 +201,18 @@ export default function LeaveManagement() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
-                      className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        leave.status === 'approved'
-                          ? 'bg-green-100 text-green-800'
-                          : leave.status === 'rejected'
+                      className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${leave.status === 'approved'
+                        ? 'bg-green-100 text-green-800'
+                        : leave.status === 'rejected'
                           ? 'bg-red-100 text-red-800'
                           : 'bg-yellow-100 text-yellow-800'
-                      }`}
+                        }`}
                     >
                       {leave.status === 'approved'
                         ? 'Approuvé'
                         : leave.status === 'rejected'
-                        ? 'Rejeté'
-                        : 'En attente'}
+                          ? 'Rejeté'
+                          : 'En attente'}
                     </span>
                   </td>
                   {isAdmin && (

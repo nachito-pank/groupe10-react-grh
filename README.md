@@ -26,7 +26,7 @@ Interface complète pour la gestion des ressources humaines développée avec Re
 Créez un fichier `.env` à la racine du projet :
 
 ```env
-VITE_API_BASE_URL=http://localhost:8000
+VITE_API_BASE_URL=https://api.react.nos-apps.com
 ```
 
 ### Installation

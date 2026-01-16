@@ -15,7 +15,6 @@ export interface ApiAuthResponse {
   success: boolean;
   data: AuthResponse;
 }
-``
 
 export interface Employee {
   id: number;

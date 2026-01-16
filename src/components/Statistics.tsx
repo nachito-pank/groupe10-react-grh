@@ -1,6 +1,31 @@
+import { useEffect, useState } from 'react';
 import { BarChart3, TrendingUp, Users, Calendar } from 'lucide-react';
 
 export default function Statistics() {
+  const [overview, setOverview] = useState<any>({ totalEmployees: 0, approvedLeaves: 0, avgNote: 0 });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { statsApi } = await import('../services/api');
+        const data = await statsApi.getOverview();
+        setOverview(data);
+      } catch (err) {
+        console.error('Error loading stats', err);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-gray-500">Chargement...</div>
+      </div>
+    );
+  }
   return (
     <div className="space-y-6">
       <div>
@@ -13,7 +38,7 @@ export default function Statistics() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Total Employés</p>
-              <p className="text-3xl font-bold text-gray-800 mt-1">147</p>
+              <p className="text-3xl font-bold text-gray-800 mt-1">{overview.totalEmployees}</p>
               <p className="text-xs text-green-600 mt-2 flex items-center">
                 <TrendingUp className="w-3 h-3 mr-1" />
                 +12% ce mois
@@ -45,7 +70,7 @@ export default function Statistics() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Congés en cours</p>
-              <p className="text-3xl font-bold text-gray-800 mt-1">23</p>
+              <p className="text-3xl font-bold text-gray-800 mt-1">{overview.approvedLeaves}</p>
               <p className="text-xs text-gray-500 mt-2">En ce moment</p>
             </div>
             <div className="bg-yellow-100 p-3 rounded-lg">
@@ -58,7 +83,7 @@ export default function Statistics() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Note moyenne</p>
-              <p className="text-3xl font-bold text-gray-800 mt-1">4.2</p>
+              <p className="text-3xl font-bold text-gray-800 mt-1">{overview.avgNote}</p>
               <p className="text-xs text-green-600 mt-2 flex items-center">
                 <TrendingUp className="w-3 h-3 mr-1" />
                 +0.3 ce trimestre

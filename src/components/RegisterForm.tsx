@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { LogIn, ArrowRight } from 'lucide-react';
 import SplineBackground from './SplineBackground';
 
 export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () => void }) {
+  const { register } = useAuth();
+  const { showToast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -13,7 +16,6 @@ export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () 
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -32,26 +34,18 @@ export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () 
     setLoading(true);
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/groupe-10/auth/register`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        }
-      );
+      await register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        password_confirmation: formData.password_confirmation,
+        role: formData.role,
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Erreur lors de l\'inscription');
-      }
-
-      const data = await response.json();
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      await login(formData.email, formData.password);
+      showToast('Compte créé et connecté avec succès', 'success');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+      showToast(err instanceof Error ? err.message : 'Erreur lors de l\'inscription', 'error');
     } finally {
       setLoading(false);
     }
@@ -147,7 +141,7 @@ export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () 
           </div>
 
           <div>
-            <label htmlFor="role" className="block text-sm font-medium mb-2">
+            <label htmlFor="role" className="block text-sm font-medium  mb-2">
               Rôle
             </label>
             <select
@@ -156,11 +150,14 @@ export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () 
               value={formData.role}
               onChange={handleChange}
               className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              required
             >
               <option value="employe">Employé</option>
               <option value="admin">Administrateur</option>
             </select>
           </div>
+
+
 
           <button
             type="submit"
@@ -192,5 +189,8 @@ export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () 
         </button>
       </div>
     </div>
+
+
+
   );
 }
