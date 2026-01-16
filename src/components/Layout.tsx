@@ -27,7 +27,7 @@ export default function Layout({ children, currentView, onViewChange }: LayoutPr
 
   const menuItems = [
     { id: 'dashboard', label: 'Tableau de bord', icon: Home, roles: ['admin', 'employe'] },
-    { id: 'directory', label: 'Annuaire', icon: Users, roles: ['admin', 'employe'] },
+    { id: 'directory', label: 'Annuaire', icon: Users, roles: ['admin'] },
     { id: 'leaves', label: 'Congés', icon: Calendar, roles: ['admin', 'employe'] },
     { id: 'attendance', label: 'Présences', icon: Clock, roles: ['admin', 'employe'] },
     { id: 'performance', label: 'Évaluations', icon: Award, roles: ['admin', 'employe'] },
