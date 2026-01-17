@@ -191,10 +191,10 @@ export default function AdminDashboard() {
                 </div>
                 <span
                   className={`ml-3 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${leave.status === 'approved'
-                      ? 'bg-green-100 text-green-700'
-                      : leave.status === 'rejected'
-                        ? 'bg-red-100 text-red-700'
-                        : 'bg-yellow-100 text-yellow-700'
+                    ? 'bg-green-100 text-green-700'
+                    : leave.status === 'rejected'
+                      ? 'bg-red-100 text-red-700'
+                      : 'bg-yellow-100 text-yellow-700'
                     }`}
                 >
                   {leave.status === 'approved'

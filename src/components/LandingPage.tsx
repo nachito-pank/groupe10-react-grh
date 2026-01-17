@@ -229,7 +229,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
                 Inscrivez-vous maintenant et accédez à tous les outils dont vous avez besoin
               </p>
               <button
-              onClick={() => onNavigate('register')}
+                onClick={() => onNavigate('register')}
                 className="inline-flex items-center space-x-2 px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-cyan-500/50 transition shadow-lg"
               >
                 <span>Commencer l'essai gratuit</span>

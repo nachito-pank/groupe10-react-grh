@@ -164,12 +164,12 @@ export const employeeApi = {
       headers: getAuthHeaders(),
     });
     const data: any = await handleResponse<any>(response);
-    
+
     // Normaliser la réponse du profil
     const profile = Array.isArray(data) ? data[0] : (data?.data || data);
     const name = profile.name || profile.user?.name || profile.nom || '';
     const email = profile.email || profile.user?.email || '';
-    
+
     return {
       id: profile.id ?? profile.user?.id ?? 0,
       user_id: profile.user_id ?? profile.user?.id ?? 0,

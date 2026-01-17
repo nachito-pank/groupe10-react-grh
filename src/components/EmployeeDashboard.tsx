@@ -21,7 +21,7 @@ export default function EmployeeDashboard() {
         employeeApi.getProfile().catch(() => null),
         leaveApi.getAll(),
       ]);
-      
+
       setProfile(profileData);
       setLeaves(leavesData.filter(leave => leave.employe?.id === user?.id));
     } catch (error) {
@@ -75,7 +75,7 @@ export default function EmployeeDashboard() {
           <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-8 shadow-lg text-white relative overflow-hidden">
             {/* Background decoration */}
             <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500 rounded-full -mr-20 -mt-20 opacity-20"></div>
-            
+
             <div className="relative z-10">
               <div className="flex items-start justify-between mb-8">
                 <div>
@@ -219,10 +219,10 @@ export default function EmployeeDashboard() {
                   <p className="font-medium text-gray-800">{leave.raison}</p>
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${leave.status === 'approved'
-                        ? 'bg-green-100 text-green-700'
-                        : leave.status === 'rejected'
-                          ? 'bg-red-100 text-red-700'
-                          : 'bg-yellow-100 text-yellow-700'
+                      ? 'bg-green-100 text-green-700'
+                      : leave.status === 'rejected'
+                        ? 'bg-red-100 text-red-700'
+                        : 'bg-yellow-100 text-yellow-700'
                       }`}
                   >
                     {leave.status === 'approved'
