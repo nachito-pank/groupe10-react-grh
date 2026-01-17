@@ -93,7 +93,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
-                <h1 className="text-5xl sm:text-6xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-6 leading-tight">
+                <h1 className="text-5xl sm:text-6xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-6 leading-tight text-3d-shine">
                   Système complet de gestion RH
                 </h1>
                 <p className="text-xl text-slate-300 mb-8 leading-relaxed">
@@ -117,12 +117,12 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
                   </button>
                 </div>
               </div>
-              <div className="lg:block hidden relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-2xl blur-xl"></div>
+              <div className="lg:block hidden relative floating">
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/30 to-blue-500/30 rounded-2xl blur-2xl glow-pulse"></div>
                 <img
                   src="https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1200"
                   alt="Équipe travaillant ensemble"
-                  className="rounded-2xl shadow-2xl object-cover w-full h-500 relative"
+                  className="rounded-2xl shadow-2xl object-cover w-full h-500 relative border border-cyan-500/30 glow-pulse"
                 />
               </div>
             </div>
@@ -139,7 +139,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
                 { number: '99.9%', label: 'Uptime' },
                 { number: '24/7', label: 'Support' },
               ].map((stat, index) => (
-                <div key={index} className="text-center p-6 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 hover:border-cyan-500/50 transition">
+                <div key={index} className="text-center p-6 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 feature-card floating-slow" style={{ animationDelay: `${index * 0.2}s` }}>
                   <div className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-2">
                     {stat.number}
                   </div>
@@ -168,11 +168,12 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
                 return (
                   <div
                     key={index}
-                    className="group relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-8 border border-slate-700 hover:border-cyan-500/50 transition hover:shadow-xl hover:shadow-cyan-500/10"
+                    className="feature-card floating group relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-8 border border-slate-700 hover:border-cyan-500 transition"
+                    style={{ animationDelay: `${index * 0.15}s` }}
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition"></div>
                     <div className="relative">
-                      <div className="bg-gradient-to-br from-cyan-500/20 to-blue-500/20 w-14 h-14 rounded-lg flex items-center justify-center mb-4 border border-cyan-500/30">
+                      <div className="bg-gradient-to-br from-cyan-500/20 to-blue-500/20 w-14 h-14 rounded-lg flex items-center justify-center mb-4 border border-cyan-500/30 group-hover:glow-pulse">
                         <Icon className="w-7 h-7 text-cyan-400" />
                       </div>
                       <h3 className="text-xl font-semibold text-slate-100 mb-3">
@@ -205,12 +206,12 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
                   ))}
                 </div>
               </div>
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-2xl blur-xl"></div>
+              <div className="relative floating">
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/30 to-blue-500/30 rounded-2xl blur-2xl glow-pulse\"></div>
                 <img
                   src="https://images.pexels.com/photos/3184431/pexels-photo-3184431.jpeg?auto=compress&cs=tinysrgb&w=1200"
                   alt="Analyse et statistiques"
-                  className="rounded-2xl shadow-2xl object-cover w-full h-96 relative border border-slate-700"
+                  className="rounded-2xl shadow-2xl object-cover w-full h-96 relative border border-cyan-500/30 glow-pulse"
                 />
               </div>
             </div>
@@ -219,9 +220,9 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
 
         {/* CTA Section */}
         <section className="py-20 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-purple-500/20 rounded-2xl blur-2xl"></div>
-            <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-12 border border-slate-700">
+          <div className="max-w-4xl mx-auto text-center relative floating-slow">
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/30 via-blue-500/30 to-purple-500/30 rounded-2xl blur-3xl glow-pulse\"></div>
+            <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-12 border border-cyan-500/30 glow-pulse">
               <h2 className="text-4xl font-bold text-white mb-6">
                 Prêt à transformer votre RH?
               </h2>
