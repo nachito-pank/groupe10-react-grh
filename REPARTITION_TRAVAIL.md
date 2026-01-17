@@ -3,11 +3,11 @@
 **Projet :** Système de Gestion des Ressources Humaines (RH)  
 **Date :** 17 Janvier 2026  
 **Nombre de contributeurs :** 8 (1 Chef de Projet + 7 Développeurs)  
-**Durée estimée :** 3 semaines
+**Durée estimée :** 7 semaines
 
 ---
 
-## 👨‍💼 VOUS - Chef de Projet
+## 👨‍💼 Auguste Pharaon Nathan K - Chef de Projet
 
 **Responsabilités principales :**
 - Coordination générale du projet
