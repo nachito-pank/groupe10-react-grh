@@ -364,12 +364,14 @@ export const leaveApi = {
     console.log('📋 Extracted leaves array:', arr);
 
     // Charger les employés pour enrichir les congés
+    // Essayer d'abord de charger tous les employés (admin only), sinon continuer sans enrichissement
     let employees: Employee[] = [];
     try {
       employees = await employeeApi.getAll();
-      console.log('👥 Loaded employees:', employees);
-    } catch (e) {
-      console.warn('Could not load employees for leave enrichment', e);
+      console.log('👥 Loaded all employees:', employees);
+    } catch (e: any) {
+      // C'est normal pour les non-admins - l'endpoint retournera 403
+      console.log('ℹ️ Could not load all employees (non-admin access or error):', e instanceof ApiError ? `Error ${e.status}: ${e.message}` : e);
     }
 
     // Enrichir chaque congé avec les informations de l'employé
@@ -378,7 +380,7 @@ export const leaveApi = {
       let employe = item.employe || item.employee || item.user;
       console.log(`🔍 Leave ${item.id}: employe_id=${item.employe_id}, found employe:`, employe);
 
-      if (!employe && item.employe_id) {
+      if (!employe && item.employe_id && employees.length > 0) {
         employe = employees.find(e => e.id === item.employe_id);
         console.log(`   After search with employe_id=${item.employe_id}:`, employe);
       }

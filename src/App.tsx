@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import LandingPage from './components/LandingPage';
@@ -75,11 +76,13 @@ function AppContent() {
 
 function App() {
   return (
-    <ToastProvider>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
-    </ToastProvider>
+    <ThemeProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </ToastProvider>
+    </ThemeProvider>
   );
 }
 
