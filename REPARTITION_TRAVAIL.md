@@ -245,4 +245,4 @@ Semaine 8 : Intégration, tests, déploiement (Tous)
 ---
 
 **Dernière mise à jour :** 17 Janvier 2026  
-**Chef de Projet :** [Votre Nom]
+**Chef de Projet :** Auguste Pharaon Nathan K
