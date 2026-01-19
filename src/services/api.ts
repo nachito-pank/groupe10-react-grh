@@ -231,13 +231,6 @@ export const employeeApi = {
     return handleResponse<Employee>(response);
   },
 
-  getProfile: async (): Promise<Employee> => {
-    const response = await fetch(`${base_url}/api/groupe-10/mon-profil`, {
-      headers: getAuthHeaders(),
-    });
-    return handleResponse<Employee>(response);
-  },
-
   create: async (data: { user_id: number; role: string; service_id: number }): Promise<Employee> => {
     const response = await fetch(`${base_url}/api/groupe-10/admin/employes`, {
       method: 'POST',

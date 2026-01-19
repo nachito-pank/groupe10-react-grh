@@ -9,7 +9,6 @@ import { Calendar, Plus, Check, X, Trash2 } from 'lucide-react';
 export default function LeaveManagement() {
   const { isAdmin, user } = useAuth();
   const { showToast } = useToast();
-  const { isDark } = useTheme();
   const [leaves, setLeaves] = useState<LeaveRequest[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
