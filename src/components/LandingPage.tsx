@@ -1,4 +1,4 @@
-// import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Users,
   Calendar,
@@ -9,7 +9,10 @@ import {
   ArrowRight,
   CheckCircle,
 } from 'lucide-react';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 import Logo from './Logo';
+import GestureScrollController from './GestureScrollController';
 
 
 interface LandingPageProps {
@@ -17,7 +20,16 @@ interface LandingPageProps {
 }
 
 export default function LandingPage({ onNavigate }: LandingPageProps) {
-  // const [activeTab, setActiveTab] = useState(0);
+  const [showGestureController, setShowGestureController] = useState(false);
+
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: false,
+      mirror: true,
+      offset: 100,
+    });
+  }, []);
 
 
   const features = [
@@ -64,6 +76,28 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
 
   return (
     <>
+      {/* Gesture Controller Panel - Positioned in Hero */}
+      {showGestureController && (
+        <div className="fixed top-32 right-4 w-96 max-w-[calc(100%-2rem)] bg-slate-900/95 backdrop-blur border border-slate-700 rounded-xl shadow-2xl z-50 max-h-[60vh] overflow-y-auto">
+          <div className="p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-white">🎥 Contrôle Gestes</h3>
+              <button
+                onClick={() => setShowGestureController(false)}
+                className="text-gray-400 hover:text-white transition"
+              >
+                ✕
+              </button>
+            </div>
+            <GestureScrollController
+              showDemo={false}
+              showVisualizer={true}
+              showDebug={false}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
         {/* Navigation Header */}
         <nav className="fixed top-0 left-0 right-0 bg-slate-900/80 backdrop-blur-md border-b border-slate-700 z-40">
@@ -71,6 +105,13 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
             <div className="flex justify-between items-center h-16">
               <Logo size="md" showText={true} variant="light" />
               <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => setShowGestureController(!showGestureController)}
+                  className="px-4 py-2 text-sm bg-purple-600/20 text-purple-300 hover:bg-purple-600/40 border border-purple-500/30 rounded-lg transition"
+                  title="Activer le contrôle par gestes"
+                >
+                  🎥 Gestes
+                </button>
                 <button
                   onClick={() => onNavigate('login')}
                   className="px-4 py-2 text-slate-300 hover:text-cyan-400 rounded-lg transition"
@@ -92,7 +133,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
         <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div>
+              <div data-aos="fade-up">
                 <h1 className="text-5xl sm:text-6xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-6 leading-tight text-3d-shine">
                   Système complet de gestion RH
                 </h1>
@@ -117,7 +158,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
                   </button>
                 </div>
               </div>
-              <div className="lg:block hidden relative floating">
+              <div className="lg:block hidden relative floating" data-aos="fade-left">
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/30 to-blue-500/30 rounded-2xl blur-2xl glow-pulse"></div>
                 <img
                   src="https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1200"
@@ -139,7 +180,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
                 { number: '99.9%', label: 'Uptime' },
                 { number: '24/7', label: 'Support' },
               ].map((stat, index) => (
-                <div key={index} className="text-center p-6 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 feature-card floating-slow" style={{ animationDelay: `${index * 0.2}s` }}>
+                <div key={index} data-aos="zoom-in" data-aos-delay={`${index * 100}`} className="text-center p-6 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 feature-card floating-slow" style={{ animationDelay: `${index * 0.2}s` }}>
                   <div className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-2">
                     {stat.number}
                   </div>
@@ -153,7 +194,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
         {/* Features Section */}
         <section className="py-20 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
+            <div className="text-center mb-16" data-aos="fade-up">
               <h2 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-4">
                 Fonctionnalités complètes
               </h2>
@@ -168,6 +209,8 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
                 return (
                   <div
                     key={index}
+                    data-aos="fade-up"
+                    data-aos-delay={`${index * 100}`}
                     className="feature-card floating group relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-8 border border-slate-700 hover:border-cyan-500 transition"
                     style={{ animationDelay: `${index * 0.15}s` }}
                   >
@@ -193,20 +236,20 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
           <div className="max-w-7xl mx-auto">
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div>
+              <div data-aos="fade-right">
                 <h2 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-8">
                   Avantages clés
                 </h2>
                 <div className="space-y-4">
                   {benefits.map((benefit, index) => (
-                    <div key={index} className="flex items-start space-x-3">
+                    <div key={index} data-aos="fade-up" data-aos-delay={`${index * 100}`} className="flex items-start space-x-3">
                       <CheckCircle className="w-6 h-6 text-cyan-400 flex-shrink-0 mt-1" />
                       <span className="text-lg text-slate-300">{benefit}</span>
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="relative floating">
+              <div className="relative floating" data-aos="fade-left">
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/30 to-blue-500/30 rounded-2xl blur-2xl glow-pulse\"></div>
                 <img
                   src="https://images.pexels.com/photos/3184431/pexels-photo-3184431.jpeg?auto=compress&cs=tinysrgb&w=1200"
@@ -220,7 +263,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
 
         {/* CTA Section */}
         <section className="py-20 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center relative floating-slow">
+          <div className="max-w-4xl mx-auto text-center relative floating-slow" data-aos="zoom-in">
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/30 via-blue-500/30 to-purple-500/30 rounded-2xl blur-3xl glow-pulse\"></div>
             <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-12 border border-cyan-500/30 glow-pulse">
               <h2 className="text-4xl font-bold text-white mb-6">
