@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import {
   Users,
   Calendar,
@@ -12,16 +12,15 @@ import {
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Logo from './Logo';
-import GestureScrollController from './GestureScrollController';
+import GestureScrollPage from './GestureScrollPage';
 
 
 interface LandingPageProps {
   onNavigate: (view: 'login' | 'register') => void;
+  enableGestureScroll?: boolean;
 }
 
-export default function LandingPage({ onNavigate }: LandingPageProps) {
-  const [showGestureController, setShowGestureController] = useState(false);
-
+export default function LandingPage({ onNavigate, enableGestureScroll = true }: LandingPageProps) {
   useEffect(() => {
     AOS.init({
       duration: 1000,
@@ -74,30 +73,8 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
     'Conformité et audit',
   ];
 
-  return (
+  const content = (
     <>
-      {/* Gesture Controller Panel - Positioned in Hero */}
-      {showGestureController && (
-        <div className="fixed top-32 right-4 w-96 max-w-[calc(100%-2rem)] bg-slate-900/95 backdrop-blur border border-slate-700 rounded-xl shadow-2xl z-50 max-h-[60vh] overflow-y-auto">
-          <div className="p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-white">🎥 Contrôle Gestes</h3>
-              <button
-                onClick={() => setShowGestureController(false)}
-                className="text-gray-400 hover:text-white transition"
-              >
-                ✕
-              </button>
-            </div>
-            <GestureScrollController
-              showDemo={false}
-              showVisualizer={true}
-              showDebug={false}
-            />
-          </div>
-        </div>
-      )}
-
       <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
         {/* Navigation Header */}
         <nav className="fixed top-0 left-0 right-0 bg-slate-900/80 backdrop-blur-md border-b border-slate-700 z-40">
@@ -105,13 +82,6 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
             <div className="flex justify-between items-center h-16">
               <Logo size="md" showText={true} variant="light" />
               <div className="flex items-center space-x-4">
-                <button
-                  onClick={() => setShowGestureController(!showGestureController)}
-                  className="px-4 py-2 text-sm bg-purple-600/20 text-purple-300 hover:bg-purple-600/40 border border-purple-500/30 rounded-lg transition"
-                  title="Activer le contrôle par gestes"
-                >
-                  🎥 Gestes
-                </button>
                 <button
                   onClick={() => onNavigate('login')}
                   className="px-4 py-2 text-slate-300 hover:text-cyan-400 rounded-lg transition"
@@ -365,4 +335,19 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
       </div>
     </>
   );
+
+  // Si les gestes sont activés, envelopper le contenu
+  if (enableGestureScroll) {
+    return (
+      <GestureScrollPage
+        showDemo={true}
+        downSpeed={12}
+        upSpeed={12}
+      >
+        {content}
+      </GestureScrollPage>
+    );
+  }
+
+  return content;
 }

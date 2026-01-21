@@ -1,213 +1,259 @@
-import { HandLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
+import {
+    FilesetResolver,
+    HandLandmarker,
+    type Hand,
+} from "@mediapipe/tasks-vision";
 
 export interface HandDetectionResult {
     handsDetected: number;
-    leftHandConfidence: number;
-    rightHandConfidence: number;
-    leftPalmOpen: boolean;
-    rightPalmOpen: boolean;
-    gestureAction: 'scroll-down' | 'scroll-up' | 'stop';
+    gesture: "none" | "one-palm" | "two-palms";
+    confidence: number;
+    landmarks?: Hand[];
+    timestamp: number;
 }
 
-class HandDetectionService {
-    private handLandmarker: HandLandmarker | null = null;
-    private videoElement: HTMLVideoElement | null = null;
-    private isInitialized = false;
-    private animationFrameId: number | null = null;
-    private callbacks: {
-        onDetection?: (result: HandDetectionResult) => void;
-        onError?: (error: Error) => void;
-    } = {};
+let handLandmarker: HandLandmarker | null = null;
+let isInitializing = false;
+let initPromise: Promise<void> | null = null;
 
-    async initialize(videoElement: HTMLVideoElement, _canvasElement?: HTMLCanvasElement): Promise<void> {
-        if (this.isInitialized) return;
+const PALM_THRESHOLD = 0.05; // Seuil de distance pour déterminer si la paume est ouverte
 
+/**
+ * Initialise le détecteur de mains MediaPipe
+ */
+export async function initializeHandDetector(): Promise<void> {
+    if (handLandmarker) return;
+    if (initPromise) return initPromise;
+
+    isInitializing = true;
+    initPromise = (async () => {
         try {
-            this.videoElement = videoElement;
+            console.log("[HandDetector] Initialisation en cours...");
 
             const vision = await FilesetResolver.forVisionTasks(
-                'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
+                "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.8/wasm"
             );
 
-            this.handLandmarker = await HandLandmarker.createFromOptions(vision, {
+            console.log("[HandDetector] Ressources WASM chargées");
+
+            handLandmarker = await HandLandmarker.createFromOptions(vision, {
                 baseOptions: {
-                    modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker.task',
-                    delegate: 'GPU',
+                    modelAssetPath:
+                        "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
                 },
-                runningMode: 'VIDEO',
+                runningMode: "VIDEO",
                 numHands: 2,
             });
 
-            this.isInitialized = true;
-            console.log('Hand Detection initialized successfully');
+            console.log("[HandDetector] ✅ Initialisé avec succès");
         } catch (error) {
-            const err = error instanceof Error ? error : new Error('Unknown error');
-            console.error('Failed to initialize Hand Detection:', err);
-            this.callbacks.onError?.(err);
-            throw err;
+            console.error("[HandDetector] ❌ Erreur d'initialisation:", error);
+            handLandmarker = null;
+            throw error;
+        } finally {
+            isInitializing = false;
+        }
+    })();
+
+    return initPromise;
+}
+
+/**
+ * Détecte les gestes de la main dans une vidéo
+ * @param videoElement - L'élément vidéo contenant le flux de la caméra
+ * @returns Le résultat de la détection
+ */
+export async function detectGesture(
+    videoElement: HTMLVideoElement
+): Promise<HandDetectionResult> {
+    if (!handLandmarker) {
+        if (isInitializing) {
+            await initPromise;
+            if (!handLandmarker) {
+                return {
+                    handsDetected: 0,
+                    gesture: "none",
+                    confidence: 0,
+                    timestamp: Date.now(),
+                };
+            }
+        } else {
+            await initializeHandDetector();
+            if (!handLandmarker) {
+                return {
+                    handsDetected: 0,
+                    gesture: "none",
+                    confidence: 0,
+                    timestamp: Date.now(),
+                };
+            }
         }
     }
 
-    async startDetection(): Promise<void> {
-        if (!this.videoElement) {
-            throw new Error('Video element not initialized');
-        }
-
-        // Request camera access
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: {
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 },
-                    facingMode: 'user',
-                },
-                audio: false,
-            });
-
-            this.videoElement.srcObject = stream;
-            this.videoElement.onloadedmetadata = () => {
-                this.videoElement!.play();
-                this.startDetectionLoop();
+    try {
+        // Vérifier que la vidéo est prête
+        if (videoElement.readyState < 2) {
+            return {
+                handsDetected: 0,
+                gesture: "none",
+                confidence: 0,
+                timestamp: Date.now(),
             };
-        } catch (error) {
-            const err = error instanceof Error ? error : new Error('Could not access camera');
-            console.error('Camera access error:', err);
-            this.callbacks.onError?.(err);
-            throw err;
-        }
-    }
-
-    private startDetectionLoop(): void {
-        const detectFrame = async () => {
-            if (!this.handLandmarker || !this.videoElement || this.videoElement.paused) {
-                this.animationFrameId = requestAnimationFrame(detectFrame);
-                return;
-            }
-
-            try {
-                const results = this.handLandmarker.detectForVideo(
-                    this.videoElement,
-                    performance.now()
-                );
-
-                const detection = this.processResults(results);
-                this.callbacks.onDetection?.(detection);
-            } catch (error) {
-                console.error('Detection error:', error);
-            }
-
-            this.animationFrameId = requestAnimationFrame(detectFrame);
-        };
-
-        detectFrame();
-    }
-
-    private processResults(results: any): HandDetectionResult {
-        const handsDetected = results.landmarks?.length || 0;
-        let leftHandConfidence = 0;
-        let rightHandConfidence = 0;
-        let leftPalmOpen = false;
-        let rightPalmOpen = false;
-
-        if (handsDetected > 0) {
-            // Detect hand orientation and palm openness
-            for (let i = 0; i < handsDetected; i++) {
-                const hand = results.handedness[i];
-                const landmarks = results.landmarks[i];
-                const confidence = results.handedness[i]?.displayName === 'Right' ? 0.8 : 0.8;
-
-                const palmOpen = this.isPalmOpen(landmarks);
-
-                if (hand?.displayName === 'Right') {
-                    rightHandConfidence = confidence;
-                    rightPalmOpen = palmOpen;
-                } else {
-                    leftHandConfidence = confidence;
-                    leftPalmOpen = palmOpen;
-                }
-            }
         }
 
-        let gestureAction: 'scroll-down' | 'scroll-up' | 'stop' = 'stop';
+        const result = handLandmarker.detectForVideo(
+            videoElement,
+            performance.now()
+        );
+        const handsDetected = result.landmarks.length;
 
-        if (handsDetected === 1) {
-            if ((leftPalmOpen && leftHandConfidence > 0.5) || (rightPalmOpen && rightHandConfidence > 0.5)) {
-                gestureAction = 'scroll-down';
-            }
-        } else if (handsDetected === 2) {
-            if ((leftPalmOpen && leftHandConfidence > 0.5) && (rightPalmOpen && rightHandConfidence > 0.5)) {
-                gestureAction = 'scroll-up';
-            }
+        if (handsDetected === 0) {
+            return {
+                handsDetected: 0,
+                gesture: "none",
+                confidence: 0,
+                landmarks: result.handedness,
+                timestamp: Date.now(),
+            };
+        }
+
+        // Analyser si les paumes sont ouvertes
+        const palmOpenStates = result.landmarks.map((landmarks) =>
+            isPalmOpen(landmarks)
+        );
+
+        // Logging détaillé pour debug
+        try {
+            console.log(`[HandDetector] handsDetected=${handsDetected} palmsOpen=${palmOpenStates.map(s => s ? 1 : 0).join(',')}`);
+        } catch (e) {
+            // silent
+        }
+
+        let gesture: "none" | "one-palm" | "two-palms" = "none";
+        let confidence = 0;
+
+        if (handsDetected === 1 && palmOpenStates[0]) {
+            gesture = "one-palm";
+            confidence = 0.95;
+
+        } else if (
+            handsDetected === 2 &&
+            palmOpenStates[0] &&
+            palmOpenStates[1]
+        ) {
+            gesture = "two-palms";
+            confidence = 0.95;
         }
 
         return {
             handsDetected,
-            leftHandConfidence,
-            rightHandConfidence,
-            leftPalmOpen,
-            rightPalmOpen,
-            gestureAction,
+            gesture,
+            confidence,
+            landmarks: result.landmarks,
+            timestamp: Date.now(),
         };
-    }
-
-    private isPalmOpen(landmarks: any[]): boolean {
-        if (!landmarks || landmarks.length < 21) return false;
-
-        // Landmarks: 0=wrist, 5=index_mcp, 9=middle_mcp, 13=ring_mcp, 17=pinky_mcp
-        // 4=index_tip, 8=middle_tip, 12=ring_tip, 16=pinky_tip, 20=pinky_tip
-        const wrist = landmarks[0];
-        const middleFingerTip = landmarks[12];
-
-        // Check if fingers are extended (tip is higher than wrist in Y)
-        const distance = Math.abs(middleFingerTip.y - wrist.y);
-
-        // Check if palm is facing camera (check z coordinates)
-        const fingerSpread = this.calculateFingerSpread(landmarks);
-
-        // Palm is open if fingers are extended and spread apart
-        return distance > 0.1 && fingerSpread > 0.08;
-    }
-
-    private calculateFingerSpread(landmarks: any[]): number {
-        // Calculate spread between index and pinky fingers
-        const indexTip = landmarks[8]; // middle finger
-        const pinkyTip = landmarks[16];
-
-        const spread = Math.sqrt(
-            Math.pow(indexTip.x - pinkyTip.x, 2) +
-            Math.pow(indexTip.y - pinkyTip.y, 2)
-        );
-
-        return spread;
-    }
-
-    stopDetection(): void {
-        if (this.animationFrameId !== null) {
-            cancelAnimationFrame(this.animationFrameId);
-            this.animationFrameId = null;
-        }
-
-        if (this.videoElement && this.videoElement.srcObject) {
-            const stream = this.videoElement.srcObject as MediaStream;
-            stream.getTracks().forEach(track => track.stop());
-            this.videoElement.srcObject = null;
-        }
-    }
-
-    onDetection(callback: (result: HandDetectionResult) => void): void {
-        this.callbacks.onDetection = callback;
-    }
-
-    onError(callback: (error: Error) => void): void {
-        this.callbacks.onError = callback;
-    }
-
-    dispose(): void {
-        this.stopDetection();
-        this.isInitialized = false;
-        this.handLandmarker = null;
-        this.videoElement = null;
+    } catch (error) {
+        console.error("Erreur lors de la détection du geste:", error);
+        return {
+            handsDetected: 0,
+            gesture: "none",
+            confidence: 0,
+            timestamp: Date.now(),
+        };
     }
 }
 
-export const handDetectionService = new HandDetectionService();
+/**
+ * Vérifie si une paume est ouverte
+ * Basé sur la distance entre les doigts et le centre de la paume
+ */
+function isPalmOpen(landmarks: Array<{ x: number; y: number; z: number }>): boolean {
+    if (landmarks.length < 21) return false;
+
+    // Points clés:
+    // 0: poignet
+    // 5: base index
+    // 9: base majeur
+    // 13: base annulaire
+    // 17: base auriculaire
+    // 4: bout pouce
+    // 8: bout index
+    // 12: bout majeur
+    // 16: bout annulaire
+    // 20: bout auriculaire
+
+    const wrist = landmarks[0];
+    const middleFingerBase = landmarks[9];
+
+    // Calculer les positions des bouts de doigts
+    const fingerTips = [
+        landmarks[4],  // pouce
+        landmarks[8],  // index
+        landmarks[12], // majeur
+        landmarks[16], // annulaire
+        landmarks[20], // auriculaire
+    ];
+
+    const fingerBases = [
+        landmarks[2],  // base pouce
+        landmarks[5],  // base index
+        landmarks[9],  // base majeur
+        landmarks[13], // base annulaire
+        landmarks[17], // base auriculaire
+    ];
+
+    // Calculer la distance moyenne entre les bouts et les bases
+    let totalDistance = 0;
+    for (let i = 0; i < fingerTips.length; i++) {
+        const tip = fingerTips[i];
+        const base = fingerBases[i];
+        const dx = tip.x - base.x;
+        const dy = tip.y - base.y;
+        const dz = tip.z - base.z;
+        totalDistance += Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
+    const averageDistance = totalDistance / fingerTips.length;
+
+    // Calculer la distance entre le poignet et le milieu de la paume
+    const palmSize = Math.sqrt(
+        Math.pow(middleFingerBase.x - wrist.x, 2) +
+        Math.pow(middleFingerBase.y - wrist.y, 2) +
+        Math.pow(middleFingerBase.z - wrist.z, 2)
+    );
+
+    // Déterminer si la paume est ouverte en comparant les distances
+    // Calculer ratio distance doigts / taille paume
+    const ratio = palmSize > 0 ? averageDistance / palmSize : 0;
+
+    // Seuils heuristiques :
+    // - ratio > 0.6 signifie doigts largement étendus par rapport à la paume
+    // - sinon, si la paume est grande en absolu, accepter avgDistance > 0.04
+    const palmIsOpen = ratio > 0.6 || averageDistance > 0.04;
+
+    // Logs pour aider au debugging (affichés dans la console navigateur)
+    try {
+        console.log(`[HandDetector:isPalmOpen] avgDistance=${averageDistance.toFixed(4)} palmSize=${palmSize.toFixed(4)} ratio=${ratio.toFixed(3)} -> open=${palmIsOpen}`);
+    } catch (e) {
+        // silent
+    }
+
+    return palmIsOpen;
+}
+
+/**
+ * Arrête le détecteur de mains et libère les ressources
+ */
+export function closeHandDetector(): void {
+    if (handLandmarker) {
+        handLandmarker.close();
+        handLandmarker = null;
+    }
+}
+
+/**
+ * Obtient l'état actuel du détecteur
+ */
+export function isHandDetectorReady(): boolean {
+    return handLandmarker !== null && !isInitializing;
+}
