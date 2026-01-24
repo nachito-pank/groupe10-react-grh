@@ -28,11 +28,11 @@ export function useGestureScroll(
     options: UseGestureScrollOptions = {}
 ) {
     const {
-        downSpeed = 3,
-        upSpeed = 3,
-        smoothing = 0.15,
-        detectionInterval = 30, // ~33fps
-        stabilityThreshold = 3,
+        downSpeed = 80,
+        upSpeed = 80,
+        smoothing = 1,
+        detectionInterval = 0.1, // ~33fps
+        stabilityThreshold = 0.2,
         onGestureChange,
     } = options;
 
@@ -52,29 +52,29 @@ export function useGestureScroll(
     const updateScroll = useCallback(() => {
         const state = stateRef.current;
 
-        // Interpoler la vélocité actuelle vers la vélocité cible
-        state.currentVelocity +=
-            (state.targetVelocity - state.currentVelocity) * smoothing;
+        // Interpoler la vélocité actuelle vers la vélocité cible avec easing exponentiel
+        // Cela crée un mouvement naturel et fluide
+        const velocityDiff = state.targetVelocity - state.currentVelocity;
+        state.currentVelocity += velocityDiff * smoothing;
 
-        // Appliquer le scroll
-        if (Math.abs(state.currentVelocity) > 0.01) {
-            const before = window.scrollY;
-            window.scrollBy(0, state.currentVelocity);
-            const after = window.scrollY;
+        // Appliquer le scroll si la vélocité est significative
+        const VELOCITY_THRESHOLD = 0.05; // Seuil optimal pour fluidité
+        if (Math.abs(state.currentVelocity) > VELOCITY_THRESHOLD) {
+            // Arrondir pour éviter les sub-pixel scrolling
+            const scrollAmount = Math.round(state.currentVelocity * 100) / 100;
+            window.scrollBy(0, scrollAmount);
             state.isScrolling = true;
-            // Logrames peu fréquents pour debug
-            const now = performance.now();
-            const last = (updateScroll as any)._lastLogTime || 0;
-            if (now - last > 300) {
-                (updateScroll as any)._lastLogTime = now;
-                console.log(`[useGestureScroll] scrollBy=${state.currentVelocity.toFixed(2)} target=${state.targetVelocity.toFixed(2)} before=${Math.round(before)} after=${Math.round(after)}`);
-            }
         } else {
-            state.currentVelocity = 0;
-            state.isScrolling = false;
+            // Arrêt progressif du scroll
+            state.currentVelocity *= 0.95; // Décélération progressive
+            if (Math.abs(state.currentVelocity) < 0.01) {
+                state.currentVelocity = 0;
+                state.targetVelocity = 0;
+                state.isScrolling = false;
+            }
         }
 
-        // Continuer l'animation
+        // Continuer l'animation sur chaque frame
         animationFrameRef.current = requestAnimationFrame(updateScroll);
     }, [smoothing]);
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { NavigationProvider, useNavigation } from './contexts/NavigationContext';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import LandingPage from './components/LandingPage';
@@ -16,11 +17,21 @@ import AttendanceTracking from './components/AttendanceTracking';
 import PerformanceReview from './components/PerformanceReview';
 import TrainingManagement from './components/TrainingManagement';
 import Statistics from './components/Statistics';
+import Features from './components/Features';
+import Pricing from './components/Pricing';
+import Security from './components/Security';
+import About from './components/About';
+import Blog from './components/Blog';
+import Contact from './components/Contact';
+import Terms from './components/Terms';
+import Privacy from './components/Privacy';
+import Cookies from './components/Cookies';
 
 function AppContent() {
   const { user, isAdmin, isLoading } = useAuth();
   const [currentView, setCurrentView] = useState('dashboard');
   const [authView, setAuthView] = useState<'landing' | 'login' | 'register'>('landing');
+  const { currentPage, navigateTo } = useNavigation();
 
   if (isLoading) {
     return (
@@ -30,7 +41,24 @@ function AppContent() {
     );
   }
 
+  // Handle page routing - Show info pages when not logged in
   if (!user) {
+    const infoPages: { [key: string]: React.ReactNode } = {
+      'features': <Features />,
+      'pricing': <Pricing />,
+      'security': <Security />,
+      'about': <About />,
+      'blog': <Blog />,
+      'contact': <Contact />,
+      'terms': <Terms />,
+      'privacy': <Privacy />,
+      'cookies': <Cookies />,
+    };
+
+    if (infoPages[currentPage]) {
+      return infoPages[currentPage];
+    }
+
     if (authView === 'landing') {
       return <LandingPage onNavigate={(view) => setAuthView(view)} />;
     }
@@ -79,7 +107,9 @@ function App() {
     <ThemeProvider>
       <ToastProvider>
         <AuthProvider>
-          <AppContent />
+          <NavigationProvider>
+            <AppContent />
+          </NavigationProvider>
         </AuthProvider>
       </ToastProvider>
     </ThemeProvider>

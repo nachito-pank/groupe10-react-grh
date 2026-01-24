@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { LogIn, ArrowRight, Mail, Lock, Shield, Home } from 'lucide-react';
-import SplineBackground from './SplineBackground';
+import { Mail, Lock, Eye, EyeOff, Home, Sparkles } from 'lucide-react';
+import '../styles/glassmorphism.css';
 
 interface LoginFormProps {
   onSwitchToRegister: () => void;
@@ -11,6 +11,7 @@ interface LoginFormProps {
 export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [asAdmin, setAsAdmin] = useState(false);
@@ -25,16 +26,13 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
     try {
       const user = await login(email, password);
 
-      // Si l'utilisateur demande explicitement un accès admin, vérifier le rôle directement depuis l'utilisateur retourné
       if (asAdmin && String(user.role || '').toLowerCase() !== 'admin') {
-        // Déconnecter et informer
         await logout();
-        showToast("Accès administrateur refusé : les identifiants fournis ne correspondent pas à un compte administrateur.", 'error');
-        setError("Accès administrateur refusé : les identifiants fournis ne correspondent pas à un compte administrateur.");
+        showToast("Accès administrateur refusé", 'error');
+        setError("Accès administrateur refusé");
         return;
       }
 
-      // Success
       showToast('Connexion réussie', 'success');
     } catch (err) {
       showToast('Email ou mot de passe incorrect', 'error');
@@ -45,134 +43,148 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Éléments de décoration */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{
+      backgroundImage: 'url("https://images.pexels.com/photos/3184287/pexels-photo-3184287.jpeg?auto=compress&cs=tinysrgb&w=1200")',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed'
+    }}>
+      {/* Overlay gradient with cyan/blue theme */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950/85 via-slate-900/80 to-slate-950/85"></div>
+      {/* Animated gradient orbs - cyan/blue theme */}
+      <div className="fixed top-20 left-10 w-72 h-72 bg-cyan-500 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob"></div>
+      <div className="fixed bottom-20 right-10 w-72 h-72 bg-blue-500 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob" style={{ animationDelay: '2s' }}></div>
+      <div className="fixed top-1/2 left-1/2 w-72 h-72 bg-purple-500 rounded-full mix-blend-screen filter blur-3xl opacity-15 animate-blob" style={{ animationDelay: '4s' }}></div>
 
-      <SplineBackground url="https://prod.spline.design/P9M2dlKhXebtaaFH/scene.splinecode" />
+      {/* Glass container */}
+      <div className="glass-container relative w-full max-w-md z-10">
+        {/* Glassmorphism card */}
+        <div className="glass-form relative backdrop-blur-2xl bg-white/10 border border-cyan-400/30 rounded-3xl p-12 shadow-2xl border-l border-t border-cyan-300/20">
+          {/* Shine effect with cyan glow */}
+          <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 via-transparent to-blue-500/10 opacity-0 rounded-3xl pointer-events-none group-hover:opacity-100 transition-opacity"></div>
 
-      {/* Conteneur principal */}
-      <div className="absolute w-full max-w-md z-10">
-        {/* Carte de connexion */}
-        <div className="bg-gradient-to-br from-white via-slate-50 to-blue-50 rounded-2xl shadow-2xl backdrop-blur-xl bg-opacity-95 border border-white border-opacity-20 overflow-hidden">
-
-          {/* Header gradient */}
-          <div className="h-1.5 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600"></div>
-
-          <div className="p-8">
-            {/* Logo et titre */}
-            <div className="text-center mb-5">
-              <div className="flex justify-center mb-2">
+          {/* Content */}
+          <div className="relative z-10">
+            {/* Logo and title */}
+            <div className="text-center mb-8">
+              <div className="flex justify-center mb-4">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg blur-md opacity-75"></div>
-                  <div className="relative bg-gradient-to-br from-blue-600 to-purple-600 p-2 rounded-lg">
-                    <LogIn className="w-6 h-6 text-white" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-2xl blur-xl opacity-75"></div>
+                  <div className="relative bg-gradient-to-br from-cyan-500 to-blue-600 p-3 rounded-2xl">
+                    <Sparkles className="w-8 h-8 text-white" />
                   </div>
                 </div>
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-1">
-                Portail RH
-              </h1>
-              <p className="text-slate-600 text-xs font-medium">
-                Accédez à votre espace personnel
-              </p>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">Portail RH</h1>
+              <p className="text-slate-300 text-sm font-medium">Accédez à votre espace personnel</p>
             </div>
 
-            {/* Messages d'erreur */}
+            {/* Error message */}
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
-                <div className="flex-shrink-0 mt-0.5">
-                  <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <p className="text-red-700 text-sm font-medium">{error}</p>
+              <div className="mb-6 p-4 backdrop-blur-md bg-red-500/20 border border-red-400/30 rounded-xl animate-pulse">
+                <p className="text-red-100 text-sm font-medium">{error}</p>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Champ Email */}
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Email input */}
               <div className="group">
-                <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-2">
-                  Adresse email
-                </label>
+                <label className="block text-sm font-semibold text-slate-100 mb-3 glass-label">Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-cyan-400/60 group-focus-within:text-cyan-300 transition-colors" />
                   <input
-                    id="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 rounded-lg border border-slate-200 bg-white/50 backdrop-blur focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-slate-400"
+                    className="glass-input w-full pl-12 pr-4 py-3 rounded-xl bg-white/5 border border-cyan-400/30 text-white placeholder-slate-400 focus:border-cyan-400 focus:shadow-lg focus:shadow-cyan-500/20 outline-none"
                     placeholder="votre@email.com"
                     required
                   />
                 </div>
               </div>
 
-              {/* Champ Mot de passe */}
+              {/* Password input */}
               <div className="group">
-                <label htmlFor="password" className="block text-sm font-semibold text-slate-700 mb-2">
-                  Mot de passe
-                </label>
+                <label className="block text-sm font-semibold text-slate-100 mb-3 glass-label">Mot de passe</label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-cyan-400/60 group-focus-within:text-cyan-300 transition-colors" />
                   <input
-                    id="password"
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 rounded-lg border border-slate-200 bg-white/50 backdrop-blur focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-slate-400"
+                    className="glass-input w-full pl-12 pr-12 py-3 rounded-xl bg-white/5 border border-cyan-400/30 text-white placeholder-slate-400 focus:border-cyan-400 focus:shadow-lg focus:shadow-cyan-500/20 outline-none"
                     placeholder="••••••••"
                     required
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-cyan-400/60 hover:text-cyan-300 transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
                 </div>
               </div>
 
-              {/* Bouton Se connecter */}
+              {/* Admin checkbox */}
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={asAdmin}
+                  onChange={(e) => setAsAdmin(e.target.checked)}
+                  className="w-5 h-5 rounded-lg bg-white/10 border border-cyan-400/30 checked:bg-cyan-500 checked:border-cyan-400 cursor-pointer accent-cyan-500"
+                />
+                <span className="text-slate-300 text-sm font-medium group-hover:text-slate-100 transition-colors">Connexion administrateur</span>
+              </label>
+
+              {/* Submit button */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg hover:shadow-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center space-x-2 group"
+                className="glass-button w-full relative bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-3 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:shadow-lg hover:shadow-cyan-500/50"
               >
-                <span>{loading ? 'Connexion en cours...' : 'Se connecter'}</span>
-                {!loading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
+                <span className="flex items-center justify-center gap-2">
+                  {loading ? 'Connexion en cours...' : 'Se connecter'}
+                </span>
               </button>
             </form>
 
-            {/* Séparateur */}
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-gradient-to-br from-white via-slate-50 to-blue-50 text-slate-500">Pas encore de compte?</span>
-              </div>
+            {/* Divider */}
+            <div className="my-8 flex items-center gap-4">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent to-cyan-400/30"></div>
+              <span className="text-slate-400 text-xs font-medium">OU</span>
+              <div className="h-px flex-1 bg-gradient-to-l from-transparent to-cyan-400/30"></div>
             </div>
 
-            {/* Bouton S'inscrire */}
+            {/* Social buttons */}
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              <button className="social-button backdrop-blur-md bg-white/5 border border-cyan-400/30 text-white py-3 rounded-xl font-semibold hover:bg-cyan-500/10 hover:border-cyan-400/50 transition-all">
+                Google
+              </button>
+              <button className="social-button backdrop-blur-md bg-white/5 border border-cyan-400/30 text-white py-3 rounded-xl font-semibold hover:bg-cyan-500/10 hover:border-cyan-400/50 transition-all">
+                GitHub
+              </button>
+            </div>
+
+            {/* Register link */}
             <button
               onClick={onSwitchToRegister}
-              className="w-full py-3 rounded-lg border-2 border-slate-200 text-slate-700 font-semibold hover:border-blue-600 hover:text-blue-600 hover:bg-blue-50/50 transition-all duration-300"
+              className="w-full text-center text-slate-400 hover:text-slate-100 transition-colors mb-3"
             >
-              Créer un compte
+              <span className="text-sm">Pas encore de compte? </span>
+              <span className="font-semibold text-cyan-400 hover:text-cyan-300 transition-colors">S'inscrire</span>
             </button>
 
-            {/* Bouton Accueil */}
+            {/* Home button */}
             <button
-              onClick={() => window.location.href = '/'}
-              className="w-full mt-3 py-3 rounded-lg text-slate-600 font-medium hover:text-slate-700 hover:bg-slate-100 transition-all duration-300 flex items-center justify-center gap-2 group"
+              onClick={() => window.location.hash = '#landing'}
+              className="w-full flex items-center justify-center gap-2 text-slate-400 hover:text-slate-100 transition-colors text-sm font-medium"
             >
-              <Home className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" />
+              <Home className="w-4 h-4" />
               Retour à l'accueil
             </button>
           </div>
-        </div>
-
-        {/* Footer informatif */}
-        <div className="text-center mt-6 text-slate-400 text-xs">
-          <p>© 2026 Portail RH. Tous droits réservés.</p>
         </div>
       </div>
     </div>

@@ -270,17 +270,17 @@ export default function LandingPage({ onNavigate, enableGestureScroll = true }: 
                 <h4 className="text-white font-semibold mb-4">Produit</h4>
                 <ul className="space-y-2 text-sm">
                   <li>
-                    <a href="#" className="hover:text-cyan-400 transition">
+                    <a href="#features" className="hover:text-cyan-400 transition">
                       Fonctionnalités
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="hover:text-cyan-400 transition">
+                    <a href="#pricing" className="hover:text-cyan-400 transition">
                       Tarifs
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="hover:text-cyan-400 transition">
+                    <a href="#security" className="hover:text-cyan-400 transition">
                       Sécurité
                     </a>
                   </li>
@@ -290,17 +290,17 @@ export default function LandingPage({ onNavigate, enableGestureScroll = true }: 
                 <h4 className="text-white font-semibold mb-4">Entreprise</h4>
                 <ul className="space-y-2 text-sm">
                   <li>
-                    <a href="#" className="hover:text-cyan-400 transition">
+                    <a href="#about" className="hover:text-cyan-400 transition">
                       À propos
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="hover:text-cyan-400 transition">
+                    <a href="#blog" className="hover:text-cyan-400 transition">
                       Blog
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="hover:text-cyan-400 transition">
+                    <a href="#contact" className="hover:text-cyan-400 transition">
                       Contact
                     </a>
                   </li>
@@ -310,17 +310,17 @@ export default function LandingPage({ onNavigate, enableGestureScroll = true }: 
                 <h4 className="text-white font-semibold mb-4">Légal</h4>
                 <ul className="space-y-2 text-sm">
                   <li>
-                    <a href="#" className="hover:text-cyan-400 transition">
+                    <a href="#terms" className="hover:text-cyan-400 transition">
                       Conditions
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="hover:text-cyan-400 transition">
+                    <a href="#privacy" className="hover:text-cyan-400 transition">
                       Confidentialité
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="hover:text-cyan-400 transition">
+                    <a href="#cookies" className="hover:text-cyan-400 transition">
                       Cookies
                     </a>
                   </li>
