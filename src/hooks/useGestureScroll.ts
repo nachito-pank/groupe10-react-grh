@@ -28,11 +28,11 @@ export function useGestureScroll(
     options: UseGestureScrollOptions = {}
 ) {
     const {
-        downSpeed = 80,
-        upSpeed = 80,
-        smoothing = 1,
-        detectionInterval = 0.1, // ~33fps
-        stabilityThreshold = 0.2,
+        downSpeed = 8,
+        upSpeed = 8,
+        smoothing = 3,
+        detectionInterval = 30, // ~33fps
+        stabilityThreshold = 3,
         onGestureChange,
     } = options;
 
@@ -40,7 +40,7 @@ export function useGestureScroll(
         currentGesture: "none",
         isScrolling: false,
         targetVelocity: 0,
-        currentVelocity: 0,
+        currentVelocity: 0  ,
     });
 
     const frameCountRef = useRef(0);
@@ -58,11 +58,11 @@ export function useGestureScroll(
         state.currentVelocity += velocityDiff * smoothing;
 
         // Appliquer le scroll si la vélocité est significative
-        const VELOCITY_THRESHOLD = 0.05; // Seuil optimal pour fluidité
+        const VELOCITY_THRESHOLD = 1; // Seuil optimal pour fluidité
         if (Math.abs(state.currentVelocity) > VELOCITY_THRESHOLD) {
             // Arrondir pour éviter les sub-pixel scrolling
-            const scrollAmount = Math.round(state.currentVelocity * 100) / 100;
-            window.scrollBy(0, scrollAmount);
+            const scrollAmount = Math.round(state.currentVelocity * 300) / 100;
+            window.scrollBy(1, scrollAmount);
             state.isScrolling = true;
         } else {
             // Arrêt progressif du scroll

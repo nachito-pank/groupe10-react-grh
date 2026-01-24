@@ -116,8 +116,11 @@ export default function Layout({ children, currentView, onViewChange }: LayoutPr
                 )}
               </button>
               <Logo size="sm" showText={false} variant="dark" />
-              <h1 className="text-lg-fluid font-bold text-gray-800 hidden xs:inline">
+              <h1 className="text-lg-fluid font-bold text-gray-800 hidden md:inline">
                 Gestion RH
+              </h1>
+              <h1 className="text-lg-fluid font-bold text-gray-800 inline md:hidden">
+                GRH
               </h1>
             </div>
 

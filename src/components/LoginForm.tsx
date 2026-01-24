@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { Mail, Lock, Eye, EyeOff, Home, Sparkles } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Home } from 'lucide-react';
+import Logo from './Logo';
 import '../styles/glassmorphism.css';
 
 interface LoginFormProps {
   onSwitchToRegister: () => void;
+  onSwitchToLanding: () => void;
 }
 
-export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
+export default function LoginForm({ onSwitchToRegister, onSwitchToLanding }: LoginFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -68,12 +70,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
             {/* Logo and title */}
             <div className="text-center mb-8">
               <div className="flex justify-center mb-4">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-2xl blur-xl opacity-75"></div>
-                  <div className="relative bg-gradient-to-br from-cyan-500 to-blue-600 p-3 rounded-2xl">
-                    <Sparkles className="w-8 h-8 text-white" />
-                  </div>
-                </div>
+                <Logo size="sm" showText={false} variant="light" />
               </div>
               <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">Portail RH</h1>
               <p className="text-slate-300 text-sm font-medium">Accédez à votre espace personnel</p>
@@ -178,7 +175,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
 
             {/* Home button */}
             <button
-              onClick={() => window.location.hash = '#landing'}
+              onClick={onSwitchToLanding}
               className="w-full flex items-center justify-center gap-2 text-slate-400 hover:text-slate-100 transition-colors text-sm font-medium"
             >
               <Home className="w-4 h-4" />

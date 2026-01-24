@@ -6,25 +6,24 @@ interface LogoProps {
 
 export default function Logo({ size = 'md', showText = true, variant = 'light' }: LogoProps) {
   const sizeMap = {
-    sm: { icon: 20, text: 14 },
+    sm: { icon: 25, text: 14 },
     md: { icon: 28, text: 18 },
-    lg: { icon: 40, text: 24 },
+    lg: { icon: 54, text: 24 },
   };
 
   const dimensions = sizeMap[size];
 
   return (
-    <div className="flex items-center space-x-2">
+    <div className="flex flex-col items-center">
       {/* Logo Icon */}
-      <div className={`p-2 rounded-lg shadow-lg transition-all ${
-        variant === 'light'
-          ? 'bg-gradient-to-br from-cyan-500 to-blue-600 shadow-cyan-500/50'
-          : 'bg-gradient-to-br from-cyan-400 to-blue-500 shadow-cyan-400/30'
-      }`}>
+      <div className={`p-2 rounded-lg shadow-lg transition-all ${variant === 'light'
+        ? 'bg-gradient-to-br from-cyan-500 to-blue-600 shadow-cyan-500/50'
+        : 'bg-gradient-to-br from-cyan-400 to-blue-500 shadow-cyan-400/30'
+        }`}>
         <svg
           width={dimensions.icon}
           height={dimensions.icon}
-          viewBox="0 0 40 40"
+          viewBox="0 0 40 50"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           className="text-white"
@@ -60,29 +59,20 @@ export default function Logo({ size = 'md', showText = true, variant = 'light' }
             fill="currentColor"
             opacity="0.3"
           />
+
+          {/* GRH Text */}
+          <text
+            x="20"
+            y="45"
+            textAnchor="middle"
+            fontSize="18"
+            fontWeight="bold"
+            fill="currentColor"
+          >
+            GRH
+          </text>
         </svg>
       </div>
-
-      {/* Logo Text */}
-      {showText && (
-        <div className="flex flex-col">
-          <span
-            className={`font-bold bg-gradient-to-r ${
-              variant === 'light'
-                ? 'from-cyan-400 to-blue-500'
-                : 'from-cyan-300 to-blue-400'
-            } bg-clip-text text-transparent`}
-            style={{ fontSize: `${dimensions.text}px` }}
-          >
-            Portail GRH
-          </span>
-          <span className={`text-xs font-medium ${
-            variant === 'light' ? 'text-slate-400' : 'text-slate-300'
-          }`}>
-            Gestion RH
-          </span>
-        </div>
-      )}
     </div>
   );
 }

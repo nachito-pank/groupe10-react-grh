@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { Mail, Lock, User, Briefcase, Home, Sparkles, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, User, Briefcase, Home, Eye, EyeOff } from 'lucide-react';
+import Logo from './Logo';
 import '../styles/glassmorphism.css';
 
-export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () => void }) {
+export default function RegisterForm({ onSwitchToLogin, onSwitchToLanding }: { onSwitchToLogin: () => void; onSwitchToLanding: () => void }) {
   const { register } = useAuth();
   const { showToast } = useToast();
   const [formData, setFormData] = useState({
@@ -79,12 +80,7 @@ export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () 
             {/* Logo and title */}
             <div className="text-center mb-6">
               <div className="flex justify-center mb-4">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-2xl blur-xl opacity-75"></div>
-                  <div className="relative bg-gradient-to-br from-cyan-500 to-blue-600 p-3 rounded-2xl">
-                    <Sparkles className="w-8 h-8 text-white" />
-                  </div>
-                </div>
+                <Logo size="sm" showText={false} variant="light" />
               </div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">Créer un compte</h1>
               <p className="text-slate-300 text-sm font-medium">Rejoignez le Portail RH</p>
@@ -242,7 +238,7 @@ export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () 
 
             {/* Home button */}
             <button
-              onClick={() => window.location.hash = '#landing'}
+              onClick={onSwitchToLanding}
               className="w-full flex items-center justify-center gap-2 text-slate-400 hover:text-slate-100 transition-colors text-sm font-medium"
             >
               <Home className="w-4 h-4" />

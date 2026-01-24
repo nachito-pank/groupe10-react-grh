@@ -104,7 +104,7 @@ export default function LandingPage({ onNavigate, enableGestureScroll = true }: 
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div data-aos="fade-up">
-                <h1 className="text-5xl sm:text-6xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-6 leading-tight text-3d-shine">
+                <h1 className="text-5xl sm:text-6xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-6 leading-tight glow-text-outline">
                   Système complet de gestion RH
                 </h1>
                 <p className="text-xl text-slate-300 mb-8 leading-relaxed">

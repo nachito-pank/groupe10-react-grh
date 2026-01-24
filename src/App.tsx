@@ -63,10 +63,10 @@ function AppContent() {
       return <LandingPage onNavigate={(view) => setAuthView(view)} />;
     }
     if (authView === 'login') {
-      return <LoginForm onSwitchToRegister={() => setAuthView('register')} />;
+      return <LoginForm onSwitchToRegister={() => setAuthView('register')} onSwitchToLanding={() => setAuthView('landing')} />;
     }
     if (authView === 'register') {
-      return <RegisterForm onSwitchToLogin={() => setAuthView('login')} />;
+      return <RegisterForm onSwitchToLogin={() => setAuthView('login')} onSwitchToLanding={() => setAuthView('landing')} />;
     }
   }
 
