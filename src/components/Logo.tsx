@@ -1,3 +1,5 @@
+import { useNavigation } from '../contexts/NavigationContext';
+
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg';
   showText?: boolean;
@@ -5,6 +7,8 @@ interface LogoProps {
 }
 
 export default function Logo({ size = 'md', showText = true, variant = 'light' }: LogoProps) {
+  const { navigateTo } = useNavigation();
+  
   const sizeMap = {
     sm: { icon: 25, text: 14 },
     md: { icon: 28, text: 18 },
@@ -13,8 +17,17 @@ export default function Logo({ size = 'md', showText = true, variant = 'light' }
 
   const dimensions = sizeMap[size];
 
+  const handleLogoClick = () => {
+    navigateTo('landing');
+  };
+
   return (
-    <div className="flex flex-col items-center">
+    <button
+      onClick={handleLogoClick}
+      className="flex flex-col items-center bg-none border-none cursor-pointer p-0 hover:opacity-80 transition-opacity"
+      aria-label="Retour à la page d'accueil"
+    >
+      <div className="flex flex-col items-center">
       {/* Logo Icon */}
       <div className={`p-2 rounded-lg shadow-lg transition-all ${variant === 'light'
         ? 'bg-gradient-to-br from-cyan-500 to-blue-600 shadow-cyan-500/50'
@@ -74,5 +87,6 @@ export default function Logo({ size = 'md', showText = true, variant = 'light' }
         </svg>
       </div>
     </div>
+    </button>
   );
 }
